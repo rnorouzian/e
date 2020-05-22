@@ -1,3 +1,43 @@
+rm.allrowNA <- function(X) { 
+  
+  if(inherits(X, "list")){
+    
+    lapply(X, function(i) i[rowSums(is.na(i) | i == "") != ncol(i), , drop = FALSE])
+    
+  } else { X[rowSums(is.na(X) | X == "") != ncol(X), , drop = FALSE] }
+}
+
+#=============================================================================================================================           
+
+rm.allcolNA <- function(X) { 
+  
+  if(inherits(X, "list")){
+    
+    lapply(X, function(i) i[, colSums(is.na(i) | i == "") != nrow(i), drop = FALSE])
+    
+  } else { X[, colSums(is.na(X) | X == "") != nrow(X), drop = FALSE] }
+}           
+      
+#=============================================================================================================================
+           
+rm.colrowNA <- function(X){
+
+r <- rm.allrowNA(X)
+rm.allcolNA(r)  
+
+}           
+                  
+#=============================================================================================================================           
+           
+
+trim <- function(X){
+  X <- setNames(X, trimws(names(X)))
+  y <- sapply(names(X), function(x) is.character(as.vector(X[[x]])))
+  X[y] <- lapply(X[y], trimws)
+  return(X)
+}
+
+#=============================================================================================================================
 
 data.str <- function(dat, drop = NULL){
   
@@ -253,3 +293,19 @@ sizetree(data[what], toplab = toplab, stacklabels = FALSE, border = 0, base.cex 
 
 }                                  
                                   
+
+#=================================================================================================================================  
+  
+need <- c("lme4", "nlme", "emmeans", "plotrix", "ellipse") 
+have <- need %in% rownames(installed.packages())
+if(any(!have)){ install.packages( need[!have] ) }
+
+options(warn = -1)
+suppressMessages({ 
+
+  library('plotrix')
+  library('ellipse')
+  library('emmeans')
+  library('lme4')
+  library('nlme')
+})  
