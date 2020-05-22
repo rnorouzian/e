@@ -235,3 +235,21 @@ post.mixed <- function(fit, formula = NULL, plot = TRUE, by = NULL, var = NULL, 
   
   return(out)
 }        
+                                  
+#=================================================================================================================================
+                                  
+data.tree <- function(data, what = NULL, toplab = NULL, cex = 1, auto = TRUE, ...){
+
+if(auto){    
+cats <- sapply(data, Negate(is.numeric))  
+data <- data[cats]
+
+what <- if(is.null(what)) names(data) else if(all(is.numeric(what))) what else intersect(what, names(data))  
+}
+  
+toplab <- if(is.null(toplab)) names(data[what]) else toplab
+ 
+sizetree(data[what], toplab = toplab, stacklabels = FALSE, border = 0, base.cex = cex, ...)
+
+}                                  
+                                  
