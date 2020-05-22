@@ -245,7 +245,7 @@ post.mixed <- function(fit, formula = NULL, plot = TRUE, by = NULL, var = NULL, 
   
   all.factor <- all(cl == "factor") || all(cl == "character") || all(cl == "character" | cl == "factor")
   
-  if(length(av) == 1 & !all.factor) stop("No variable available for group comparison.", call. = FALSE)
+  if(length(av) == 1 & !all.factor) stop("No variable available for comparison (i.e., fitted model output sufficies.).", call. = FALSE)
   
   ems <- if(all.factor)  { eval(substitute(emmeans::emmeans(fit, f, infer = c(TRUE, TRUE), type = type, pbkrtest.limit = limit))) 
     
@@ -278,7 +278,7 @@ post.mixed <- function(fit, formula = NULL, plot = TRUE, by = NULL, var = NULL, 
                                   
 #=================================================================================================================================
                                   
-data.tree <- function(data, what = NULL, toplab = NULL, cex = 1, auto = TRUE, ...){
+data.tree <- function(data, what = NULL, toplab = NULL, cex = 1, auto = FALSE, ...){
 
 if(auto){    
 cats <- sapply(data, Negate(is.numeric))  
@@ -289,7 +289,7 @@ what <- if(is.null(what)) names(data) else if(all(is.numeric(what))) what else i
   
 toplab <- if(is.null(toplab)) names(data[what]) else toplab
  
-sizetree(data[what], toplab = toplab, stacklabels = FALSE, border = 0, base.cex = cex, ...)
+plotrix::sizetree(data[what], toplab = toplab, stacklabels = FALSE, border = 0, base.cex = cex, ...)
 
 }                                  
                                   
