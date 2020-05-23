@@ -296,17 +296,18 @@ plotrix::sizetree(data[what], toplab = toplab, stacklabels = FALSE, border = 0, 
 #=================================================================================================================================
   
 plot.prof <- function(fit){
-
-stopifnot(inherits(fit, c("lmerMod", "lmerModLmerTest", "lme4")))
   
-pp <- profile(fit, signames = FALSE)
-
-dd <- as.data.frame(pp)
-
-ggplot2::ggplot(dd,aes(.focal, .zeta)) +  geom_hline(yintercept = 0, colour = 8, linetype = 2) +
-  geom_line(colour = 2) + geom_point(colour = 2) +
-  facet_wrap(~.par, scale = "free_x") 
-}  
+  stopifnot(inherits(fit, c("lmerMod", "lmerModLmerTest", "lme4")))
+  
+  pp <- profile(fit, signames = FALSE)
+  
+  dd <- as.data.frame(pp)
+  
+  ggplot2::ggplot(dd,aes(.focal, .zeta)) +  geom_hline(yintercept = 0, colour = 8, linetype = 2) +
+    geom_line(colour = 2) + geom_point(colour = 2) +
+    facet_wrap(~.par, scale = "free_x") + xlab("Parameter Value") +
+    ylab("Zeta (Normal)")
+} 
   
 #=================================================================================================================================  
   
