@@ -293,10 +293,24 @@ plotrix::sizetree(data[what], toplab = toplab, stacklabels = FALSE, border = 0, 
 
 }                                  
                                   
+#=================================================================================================================================
+  
+plot.prof <- function(fit){
 
+stopifnot(inherits(fit, c("lmerMod", "lmerModLmerTest", "lme4")))
+  
+pp <- profile(fit, signames = FALSE)
+
+dd <- as.data.frame(pp)
+
+ggplot2::ggplot(dd,aes(.focal, .zeta)) +  geom_hline(yintercept = 0, colour = 8, linetype = 2) +
+  geom_line(colour = 2) + geom_point(colour = 2) +
+  facet_wrap(~.par, scale = "free_x") 
+}  
+  
 #=================================================================================================================================  
   
-need <- c("lme4", "nlme", "emmeans", "plotrix", "ellipse") 
+need <- c("lme4", "nlme", "emmeans", "plotrix", "ellipse", "ggplot2") 
 have <- need %in% rownames(installed.packages())
 if(any(!have)){ install.packages( need[!have] ) }
 
@@ -308,4 +322,5 @@ suppressMessages({
   library('emmeans')
   library('lme4')
   library('nlme')
+  library('ggplot2')
 })  
