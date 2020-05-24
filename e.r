@@ -223,6 +223,16 @@ plot.cor <- function (corr, outline = FALSE, col = colorRampPalette(c(4, 2))(cho
 }                     
 
 #=============================================================================================================================
+                     
+rm.terms <- function(form, term) {
+    fterms <- terms(form)
+    fac <- attr(fterms, "factors")
+    idx <- which(as.logical(fac[term, ]))
+    new.fterms <- stats::drop.terms(fterms, dropx = idx, keep.response = TRUE)
+    return(as.formula(new.fterms))
+  }                     
+                     
+#=============================================================================================================================
 
 post.mixed <- function(fit, formula = NULL, plot = TRUE, by = NULL, var = NULL, horiz = TRUE, digits = 3, adjust = "tukey", type = "response", ...){
   
@@ -230,14 +240,6 @@ post.mixed <- function(fit, formula = NULL, plot = TRUE, by = NULL, var = NULL, 
   limit <- nobs(fit)
   
   f <- if(is.null(formula)) as.formula(bquote(pairwise ~ .(terms(fit)[[3]]))) else as.formula(formula)
-  
-  rm.terms <- function(form, term) {
-    fterms <- terms(form)
-    fac <- attr(fterms, "factors")
-    idx <- which(as.logical(fac[term, ]))
-    new.fterms <- stats::drop.terms(fterms, dropx = idx, keep.response = TRUE)
-    return(as.formula(new.fterms))
-  }
   
   av <- all.vars(terms(fit)[[3]])
   
