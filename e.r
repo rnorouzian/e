@@ -297,17 +297,20 @@ plotrix::sizetree(data[what], toplab = toplab, stacklabels = FALSE, border = 0, 
   
 plot.prof <- function(fit){
   
-  stopifnot(inherits(fit, c("lmerMod", "lmerModLmerTest", "lme4")))
+  if(!inherits(fit, c("lmerMod", "lmerModLmerTest", "lme4", "glmmTMB", "glmerMod"))) stop("Model not supported.", call. = FALSE)
   
   pp <- profile(fit, signames = FALSE)
   
   dd <- as.data.frame(pp)
   
-  ggplot2::ggplot(dd,aes(.focal, .zeta)) +  geom_hline(yintercept = 0, colour = 8, linetype = 2) +
+  if(".zeta" %in% names(dd)) names(dd)[which(names(dd) == ".zeta")] <- "value"
+  if(inherits(fit, "glmmTMB")) dd$value <- sqrt(dd$value)
+  
+  ggplot2::ggplot(dd,aes(.focal, value)) +  geom_hline(yintercept = 0, colour = 8, linetype = 2) +
     geom_line(colour = 2) + geom_point(colour = 2) +
     facet_wrap(~.par, scale = "free_x") + xlab("Parameter Value") +
     ylab("Zeta (Normal)")
-} 
+}
   
 #=================================================================================================================================  
   
