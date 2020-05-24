@@ -316,17 +316,18 @@ plot.prof <- function(fit){
   
 #=================================================================================================================================  
   
-need <- c("lme4", "nlme", "emmeans", "plotrix", "ellipse", "ggplot2") 
+need <- c("lme4", "nlme", "glmmTMB", "emmeans", "plotrix", "ellipse", "ggplot2") 
 have <- need %in% rownames(installed.packages())
 if(any(!have)){ install.packages( need[!have] ) }
 
 options(warn = -1)
 suppressMessages({ 
 
-  library('plotrix')
-  library('ellipse')
-  library('emmeans')
   library('lme4')
   library('nlme')
+  library('glmmTMB')
+  library('emmeans')
   library('ggplot2')
+  library('plotrix')
+  library('ellipse')
 })  
