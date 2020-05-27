@@ -264,7 +264,7 @@ post.mixed <- function(fit, formula = NULL, plot = TRUE, by = NULL, var = NULL, 
   
   print(plot(ems, by = by, comparisons = TRUE, horizontal = horiz, adjust = adjust, xlab = xlab, ...))
   
-  sigma <- if(inherits(fit, "lme")) sqrt(sum(as.numeric(vc[,"Variance"]))) else sqrt(sum(as.numeric(c(attr(vc[[1]], "stddev"), attr(vc, "sc")))^2))
+  sigma <- if(inherits(fit, "lme")) sqrt(sum(as.numeric(vc[,"Variance"]), na.rm = TRUE)) else sqrt(sum(as.numeric(c(attr(vc[[1]], "stddev"), attr(vc, "sc")))^2, na.rm = TRUE))
   edf <- min(as.data.frame(ems[[1]])$df, na.rm = TRUE)
   em <- as.data.frame(ems[[2]])
   
