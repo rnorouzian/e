@@ -237,10 +237,9 @@ rm.terms <- function(form, term) {
 post.mixed <- function(fit, formula = NULL, plot = TRUE, by = NULL, var = NULL, horiz = TRUE, adjust = "tukey", type = "response", compare = FALSE, ...){
   
   limit <- nobs(fit)
-  
-  f <- if(is.null(formula)) as.formula(bquote(pairwise ~ .(terms(fit)[[3L]]))) else as.formula(formula)
-  
   tm <- terms(fit)
+  
+  f <- if(is.null(formula)) as.formula(bquote(pairwise ~ .(tm[[3L]]))) else as.formula(formula)
   
   av <- emmeans::.all.vars(tm)
   
