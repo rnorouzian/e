@@ -280,20 +280,20 @@ post.mixed <- function(fit, formula = NULL, plot = TRUE, by = NULL, var = NULL, 
                                   
 #=================================================================================================================================
                                   
-data.tree <- function(data, what = NULL, toplab = NULL, cex = 1, auto = FALSE, ...){
-
-if(auto){    
-cats <- sapply(data, Negate(is.numeric))  
-data <- data[cats]
-
-what <- if(is.null(what)) names(data) else if(all(is.numeric(what))) what else intersect(what, names(data))  
-}
+data.tree <- function(data, toplab = NULL, cex = 1, auto = FALSE, ...){
   
-toplab <- if(is.null(toplab)) names(data[what]) else toplab
- 
-plotrix::sizetree(data[what], toplab = toplab, stacklabels = FALSE, border = 0, base.cex = cex, ...)
-
-}                                  
+  if(auto){    
+    cats <- sapply(data, Negate(is.numeric))  
+    data <- data[cats]
+    
+    what <- names(data)
+  }
+  
+  toplab <- if(is.null(toplab)) names(data) else toplab
+  
+  plotrix::sizetree(data, toplab = toplab, stacklabels = FALSE, border = 0, base.cex = cex, ...)
+  
+}                                 
                                   
 #=================================================================================================================================
   
