@@ -234,8 +234,10 @@ rm.terms <- function(form, term) {
                      
 #=============================================================================================================================
 
-post.mixed <- function(fit, formula = NULL, plot = TRUE, by = NULL, var = NULL, horiz = TRUE, adjust = "tukey", type = "response", compare = FALSE, ...){
-  
+post.mixed <- function(fit, formula = NULL, plot = TRUE, by = NULL, var = NULL, horiz = TRUE, adjust = "tukey", type = "response", compare = FALSE, weights = c("equal", "proportional", 
+                                                                                                                                                                "outer", "cells", "flat", 
+                                                                                                                                                                "show.levels")[1], ...){
+
   limit <- nobs(fit)
   tm <- terms(fit)
   
@@ -249,7 +251,7 @@ post.mixed <- function(fit, formula = NULL, plot = TRUE, by = NULL, var = NULL, 
   
   no.contrast <- length(av) == 1L & !all.factor
   
-  ems <- if(all.factor || no.contrast)  { eval(substitute(emmeans::emmeans(fit, f, infer = c(TRUE, TRUE), type = type, pbkrtest.limit = limit))) 
+  ems <- if(all.factor || no.contrast)  { eval(substitute(emmeans::emmeans(fit, f, infer = c(TRUE, TRUE), type = type, pbkrtest.limit = limit, weights = weights))) 
     
   } else {
     
@@ -257,7 +259,7 @@ post.mixed <- function(fit, formula = NULL, plot = TRUE, by = NULL, var = NULL, 
     
     f <- rm.terms(f, var)
     
-    eval(substitute(emmeans::emtrends(fit, f, var = var, infer = c(TRUE, TRUE), type = type, pbkrtest.limit = limit)))
+    eval(substitute(emmeans::emtrends(fit, f, var = var, infer = c(TRUE, TRUE), type = type, pbkrtest.limit = limit, weights = weights)))
   } 
   
   xlab <- if(!all.factor)  paste(var, "(slope)") else "Estimated Means"
