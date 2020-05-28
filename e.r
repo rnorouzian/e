@@ -241,13 +241,13 @@ post.mixed <- function(fit, formula = NULL, plot = TRUE, by = NULL, var = NULL, 
   
   f <- if(is.null(formula)) as.formula(bquote(pairwise ~ .(tm[[3L]]))) else as.formula(formula)
   
-  av <- emmeans::.all.vars(tm)
+  av <- emmeans::.all.vars(tm)[-1L]
   
-  cl <- if(inherits(fit, "lme")) attr(tm, "dataClasses")[-1L] else setNames(sapply(av[-1L], function(i) class(model.frame(fit)[[i]])), av[-1L])
+  cl <- if(inherits(fit, "lme")) attr(tm, "dataClasses")[-1L] else setNames(sapply(av, function(i) class(model.frame(fit)[[i]])), av)
   
   all.factor <- all(cl == "factor") || all(cl == "character") || all(cl == "character" | cl == "factor")
   
-  no.contrast <- length(av[-1L]) == 1L & !all.factor
+  no.contrast <- length(av) == 1L & !all.factor
   
   ems <- if(all.factor || no.contrast)  { eval(substitute(emmeans::emmeans(fit, f, infer = c(TRUE, TRUE), type = type, pbkrtest.limit = limit))) 
     
@@ -266,26 +266,25 @@ post.mixed <- function(fit, formula = NULL, plot = TRUE, by = NULL, var = NULL, 
   
   em <- as.data.frame(ems[[2]])
   
-out <- if(inherits(fit, c("lmerMod", "lmerModLmerTest", "lme4", "lme")) & !no.contrast){
-  
-  vc <- VarCorr(fit)
-  
-  sigma <- if(inherits(fit, "lme")) sqrt(sum(as.numeric(vc[,"Variance"]), na.rm = TRUE)) else sqrt(sum(as.numeric(c(attr(vc[[1]], "stddev"), attr(vc, "sc")))^2, na.rm = TRUE))
-  
-  edf <- min(as.data.frame(ems[[1L]])$df, na.rm = TRUE)
-  
-  ef <- as.data.frame(emmeans::eff_size(ems[[1L]], sigma = sigma, edf = edf))[c(2,5,6)]
-  
-  res <- cbind(em, ef)
-  names(res)[c(2,5:7, 9:11)] <- c(if(all.factor)"mean.dif"else paste0("slope.dif","(", var,")"), "lower", "upper", "t.value", "Cohen.d", "lower.d", "upper.d")
-  res
-  
+  out <- if(inherits(fit, c("lmerMod", "lmerModLmerTest", "lme4", "lme")) & !no.contrast){
+    
+    vc <- VarCorr(fit)
+    
+    sigma <- if(inherits(fit, "lme")) sqrt(sum(as.numeric(vc[,"Variance"]), na.rm = TRUE)) else sqrt(sum(as.numeric(c(attr(vc[[1]], "stddev"), attr(vc, "sc")))^2, na.rm = TRUE))
+    
+    edf <- min(as.data.frame(ems[[1L]])$df, na.rm = TRUE)
+    
+    ef <- as.data.frame(emmeans::eff_size(ems[[1L]], sigma = sigma, edf = edf))[c(2,5,6)]
+    
+    res <- cbind(em, ef)
+    names(res)[c(2,5:7, 9:11)] <- c(if(all.factor) "mean.dif" else paste0("slope.dif.", var), "lower", "upper", "t.value", "Cohen.d", "lower.d", "upper.d")
+    res
+    
   }
   
   else {
     
     ems
-    
   }
   
   return(out)
@@ -298,8 +297,6 @@ data.tree <- function(data, toplab = NULL, cex = 1, auto = FALSE, ...){
   if(auto){    
     cats <- sapply(data, Negate(is.numeric))  
     data <- data[cats]
-    
-    what <- names(data)
   }
   
   toplab <- if(is.null(toplab)) names(data) else toplab
