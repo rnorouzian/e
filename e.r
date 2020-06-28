@@ -407,13 +407,14 @@ latent.lmer <- function (fit, formula, group.id, std = TRUE, digits = 3, prog.ba
                                     
 #=================================================================================================================================  
   
-need <- c("lme4", "nlme", "glmmTMB", "emmeans", "plotrix", "ellipse", "ggplot2") 
+need <- c("lme4", "nlme", "glmmTMB", "emmeans", "plotrix", "ellipse", "ggplot2", "lmerTest", "vtree") 
 have <- need %in% rownames(installed.packages())
 if(any(!have)){ install.packages( need[!have] ) }
 
 options(warn = -1)
 suppressMessages({ 
 
+  library('lmerTest') 
   library('lme4')
   library('nlme')
   library('glmmTMB')
@@ -421,4 +422,5 @@ suppressMessages({
   library('ggplot2')
   library('plotrix')
   library('ellipse')
+  library('vtree') 
 })  
