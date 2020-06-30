@@ -404,17 +404,35 @@ latent.lmer <- function (fit, formula, group.id, std = TRUE, digits = 3, prog.ba
   round(data.frame(est. = boot.res$t0, SE = se.s, z.value = z.value, p.value = boot.p,
     lower = ci[[1]], upper = ci[[2]]), digits)
 }                                      
+
+#=================================================================================================================================
                                     
+cor2cov <- function (R, sds, names = NULL) 
+{
+    p <- (d <- dim(R))[1L]
+    if (!is.numeric(R) || length(d) != 2L || p != d[2L]) 
+        stop("'V' is not a square numeric matrix")
+    if (any(!is.finite(sds))) 
+        warning("sds had 0 or NA entries; non-finite result is doubtful")
+    if (p != length(sds)) 
+        stop("The standard deviation vector and correlation matrix have a different number of variables")
+    S <- R
+    S[] <- sds * R * rep(sds, each = p)
+    if (!is.null(names)) {
+        stopifnot(length(names) == p)
+        rownames(S) <- colnames(S) <- names
+    }
+    S
+}                                    
 #=================================================================================================================================  
   
-need <- c("lme4", "nlme", "glmmTMB", "emmeans", "plotrix", "ellipse", "ggplot2", "lmerTest", "vtree") 
+need <- c("lme4", "nlme", "glmmTMB", "emmeans", "plotrix", "ellipse", "ggplot2", "vtree", 'jtools', 'stargazer') 
 have <- need %in% rownames(installed.packages())
 if(any(!have)){ install.packages( need[!have] ) }
 
 options(warn = -1)
 suppressMessages({ 
-
-  library('lmerTest') 
+   
   library('lme4')
   library('nlme')
   library('glmmTMB')
@@ -423,4 +441,6 @@ suppressMessages({
   library('plotrix')
   library('ellipse')
   library('vtree') 
+  library('jtools') 
+  library('stargazer') 
 })  
