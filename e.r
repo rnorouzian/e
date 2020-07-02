@@ -428,7 +428,8 @@ cor2cov <- function (R, sds, names = NULL)
   
 need <- c("lme4", "nlme", "glmmTMB", "emmeans", "plotrix", "ellipse", "vtree", 'jtools', 'stargazer', 'interactions', 'car', 'tidyverse') 
 have <- need %in% rownames(installed.packages())
-if(any(!have)){ install.packages( need[!have] ) }
+needs <- any(!have)                                    
+if(needs){ install.packages( need[!have] ) }
 
 options(warn = -1)
 suppressMessages({ 
@@ -446,3 +447,5 @@ suppressMessages({
   library('tidyverse')
   library('car')
 })  
+
+if(needs) message(Break, notice, Break)                                    
