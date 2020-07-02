@@ -426,7 +426,7 @@ cor2cov <- function (R, sds, names = NULL)
 }                                    
 #=================================================================================================================================  
   
-need <- c("lme4", "nlme", "glmmTMB", "emmeans", "plotrix", "ellipse", "ggplot2", "vtree", 'jtools', 'stargazer') 
+need <- c("lme4", "nlme", "glmmTMB", "emmeans", "plotrix", "ellipse", "ggplot2", "vtree", 'jtools', 'stargazer', 'interactions') 
 have <- need %in% rownames(installed.packages())
 if(any(!have)){ install.packages( need[!have] ) }
 
@@ -442,5 +442,6 @@ suppressMessages({
   library('ellipse')
   library('vtree') 
   library('jtools') 
+  library('interactions') 
   library('stargazer') 
 })  
