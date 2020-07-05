@@ -1,4 +1,4 @@
-scale,freq,cum.freq,pct.,cum.pct
+score,freq,cum.freq,pct.,cum.pct
 1038,142,142,0.04,0.04
 1171,15,157,0,0.04
 1250,78,235,0.02,0.06
