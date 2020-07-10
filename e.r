@@ -252,7 +252,7 @@ rm.terms <- function(form, term) {
 post.mixed <- function(fit, formula = NULL, plot = TRUE, by = NULL, var = NULL, horiz = TRUE, adjust = "tukey", type = "response", compare = FALSE, weights = c("equal", "proportional", 
                                                                                                                                                                 "outer", "cells", "flat", 
                                                                                                                                                                 "show.levels")[1], ...){
-
+  
   limit <- nobs(fit)
   tm <- terms(fit)
   
@@ -295,7 +295,7 @@ post.mixed <- function(fit, formula = NULL, plot = TRUE, by = NULL, var = NULL, 
     
     res <- cbind(em, ef)
     names(res)[c(2,5:7, 9:11)] <- c(if(all.factor) "mean.dif" else paste0("slope.dif.", var), "lower", "upper", "t.value", "Cohen.d", "lower.d", "upper.d")
-    res
+    list(emmeans = ems[[1]], contrasts = roundi(res, 3))
     
   }
   
