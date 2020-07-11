@@ -423,7 +423,25 @@ cor2cov <- function (R, sds, names = NULL)
         rownames(S) <- colnames(S) <- names
     }
     S
+}
+                                    
+#================================================================================================================================
+                                    
+n_par <- function(...){
+
+f <- function(fit){
+  total <- attr(logLik(fit), "df")
+  fixed <- length(fixef(fit))
+  random <- length(getME(fit,"theta"))
+  error <- if(isLMM(fit)) 1 else 0
+  return(c(total = total, fixed = fixed, random = random, error = error))
+}
+
+m <- as.data.frame(purrr::map_dfr(.x = list(...), .f = f))
+rownames(m) <- substitute(...())
+m
 }                                    
+                                    
 #=================================================================================================================================  
   
 need <- c("lme4", "nlme", "glmmTMB", "emmeans", "plotrix", "ellipse", "vtree", 'jtools', 'stargazer', 'interactions', 'car', 'tidyverse', 'effects', 'modelr', 'bbmle') 
