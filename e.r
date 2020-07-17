@@ -441,6 +441,47 @@ m <- as.data.frame(purrr::map_dfr(.x = list(...), .f = f))
 rownames(m) <- substitute(...())
 m
 }                                    
+ 
+#=================================================================================================================================
+
+# Some hack to turn off unnnedded tick mark on the 3rd and 4th axes of plot effects
+                                    
+plot.efflist <- function (x, selection, rows, cols, graphics = TRUE, 
+                          lattice, ...) 
+{
+  lattice <- if (missing(lattice)) 
+    list()
+  else lattice
+  if (!missing(selection)) {
+    if (is.character(selection)) 
+      selection <- gsub(" ", "", selection)
+    return(plot(x[[selection]], lattice = lattice, ...))
+  }
+  effects <- gsub(":", "*", names(x))
+  neffects <- length(x)
+  mfrow <- mfrow(neffects)
+  if (missing(rows) || missing(cols)) {
+    rows <- mfrow[1]
+    cols <- mfrow[2]
+  }
+  for (i in 1:rows) {
+    for (j in 1:cols) {
+      if ((i - 1) * cols + j > neffects) 
+        break
+      more <- !((i - 1) * cols + j == neffects)
+      lattice[["array"]] <- list(row = i, col = j, 
+                                 nrow = rows, ncol = cols, more = more)
+      pp <- plot(x[[(i - 1) * cols + j]], lattice = lattice, 
+                 ...)
+      # hack to turn off opposite side tick marks
+      pp$x.scales$tck=c(1,0)
+      pp$y.scales$tck=c(1,0)
+      print(pp)
+    }
+  }
+}
+environment(plot.efflist) <- asNamespace("effects")
+                                    
                                     
 #=================================================================================================================================  
   
