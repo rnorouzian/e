@@ -482,10 +482,49 @@ plot.efflist <- function (x, selection, rows, cols, graphics = TRUE,
 }
 environment(plot.efflist) <- asNamespace("effects")
                                     
+#=================================================================================================================================
+                                    
+penalty <- function(due, submit)
+{
+  due = strptime(due,  format = "%b %d %H:%M")
+  sub = strptime(submit, format = "%b %d %H:%M")
+  dayslate = as.numeric(difftime(sub, due, units = "days"))
+  halflife = 7
+  expshape = 1 
+  round(exp( log(.5)/halflife^expshape*(dayslate)^expshape ), 2)
+}
+
+#=================================================================================================================================
+                                    
+pen.plot <- function(dayslate = 50){
+
+submit <- strftime(seq(as.POSIXct("2020-07-23 10:20"), by = "1 day", length.out = dayslate+1), "%b %e %H:%M")
+plot(0:dayslate, penalty("Jul 23 10:20", submit), type = "l", las = 1, tck = -0.03,
+    xaxt = "n", xlab = "Days Late", ylab = "Penalty", lwd = 2, mgp = c(2, .4, 0), cex.axis = .9)
+axis(1, at = 0:dayslate, cex.axis = .6,mgp = c(2, .01, 0), tck = -0.03)
+}
+
+
+#=================================================================================================================================
+                                    
+my.penalty <- function(dayslate = 0, dayslate.span = 30){
+  
+  dayslate.span <- tail(dayslate.span, 1)
+  dayslate <- tail(dayslate, 1)
+  dayslate <- round(abs(dayslate))
+  pen.plot(dayslate.span)
+  submit <- strftime(seq(as.POSIXct("2020-07-23 10:20"), by = "1 day", length.out = dayslate+1), "%b %e %H:%M")
+  if(dayslate != 0) submit <- submit[-seq_len(dayslate)]
+  x <- dayslate
+  y <- penalty("Jul 23 10:20", submit)
+  points(x, y, type = "h", col = if(dayslate != 0) 2 else 1)
+  points(x, y, bg = 'cyan', col = 'magenta', pch = 21, cex = 1.5)
+  text(x, y, y, cex = .75, font = 2, pos = 3, xpd = NA, col = if(dayslate != 0) 2 else 1)
+}                                    
                                     
 #=================================================================================================================================  
   
-need <- c("lme4", "nlme", "glmmTMB", "emmeans", "plotrix", "ellipse", "vtree", 'jtools', 'stargazer', 'interactions', 'car', 'tidyverse', 'effects', 'modelr', 'bbmle') 
+need <- c("lme4", "nlme", "glmmTMB", "emmeans", "plotrix", "ellipse", "vtree", 'jtools', 'stargazer', 'interactions', 'car', 'tidyverse', 'effects', 'modelr', 'bbmle', 'performance', 'see') 
 have <- need %in% rownames(installed.packages())                                    
 if(any(!have)){ install.packages( need[!have] ) }
 
@@ -506,5 +545,7 @@ suppressMessages({
   library('modelr')
   library('car')
   library('effects') 
-  library('bbmle') 
+  library('bbmle')
+  library('performance')
+  library('see') 
 })                                   
