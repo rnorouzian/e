@@ -509,9 +509,9 @@ axis(1, at = 0:dayslate, cex.axis = .6,mgp = c(2, .01, 0), tck = -0.03)
                                     
 my.penalty <- function(dayslate = 0, dayslate.span = 30){
   
-  dayslate.span <- tail(dayslate.span, 1)
-  dayslate <- tail(dayslate, 1)
-  dayslate <- round(abs(dayslate))
+  dayslate.span <- tail(round(abs(dayslate.span)), 1)
+  dayslate <- tail(round(abs(dayslate)), 1)
+  if(dayslate > dayslate.span) dayslate.span <- dayslate
   pen.plot(dayslate.span)
   submit <- strftime(seq(as.POSIXct("2020-07-23 10:20"), by = "1 day", length.out = dayslate+1), "%b %e %H:%M")
   if(dayslate != 0) submit <- submit[-seq_len(dayslate)]
@@ -520,7 +520,7 @@ my.penalty <- function(dayslate = 0, dayslate.span = 30){
   points(x, y, type = "h", col = if(dayslate != 0) 2 else 1)
   points(x, y, bg = 'cyan', col = 'magenta', pch = 21, cex = 1.5)
   text(x, y, y, cex = .75, font = 2, pos = 3, xpd = NA, col = if(dayslate != 0) 2 else 1)
-}                                    
+}                                   
                                     
 #=================================================================================================================================  
   
