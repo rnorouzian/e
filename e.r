@@ -549,7 +549,7 @@ my.penalty <- function(dayslate = 0, dayslate.span = 30){
   if(dayslate > dayslate.span) dayslate.span <- dayslate
   pen.plot(dayslate.span)
   x <- dayslate
-  y <- penalty2(dayslate)
+  y <- penalty(dayslate)
   points(x, y, type = "h", col = ifelse(dayslate != 0, 2, 1))
   points(x, y, bg = 'cyan', col = 'magenta', pch = 21, cex = 1.5)
   text(x, y, y, cex = .75, font = 2, pos = 3, xpd = NA, col = ifelse(dayslate != 0, 2, 1))
