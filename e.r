@@ -535,7 +535,7 @@ penalty <- function(dayslate)
 
 pen.plot <- function(dayslate = 50){
   
-  plot(x <- 0:dayslate, penalty2(x), type = "l", las = 1, tck = -0.03,
+  plot(x <- 0:dayslate, penalty(x), type = "l", las = 1, tck = -0.03,
        xaxt = "n", xlab = "Days Late", ylab = "Penalty", lwd = 2, mgp = c(2, .4, 0), cex.axis = .9)
   axis(1, at = 0:dayslate, cex.axis = .6, mgp = c(2, .01, 0), tck = -0.03)
 }
