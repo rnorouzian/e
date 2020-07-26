@@ -554,6 +554,58 @@ my.penalty <- function(dayslate = 0, dayslate.span = 30){
   points(x, y, bg = 'cyan', col = 'magenta', pch = 21, cex = 1.5)
   text(x, y, y, cex = .75, font = 2, pos = 3, xpd = NA, col = ifelse(dayslate != 0, 2, 1))
 }        
+
+#=================================================================================================================================
+       
+sim.piece <- function(nPart = 100, G.r = .3, G.sds = c(2, 1, 2), e = .1,
+                      betas = 2*c(10, 0, 0, 0, 3, .3, .6, .5, 2.7, .2, .3, 0, .7, 1),
+                      type = c("normal", "logistic", "poisson"), seed = NULL){
+  
+  type <- match.arg(type) 
+  set.seed(seed)
+  ##Betas: 
+  #[1] "(Intercept)"         "Time1"               "Time2"               "groupT"             
+  #[5] "engage"              "profMed"             "profAdv"             "Time1:groupT"       
+  #[9] "Time2:groupT"        "Time1:engage"        "Time2:engage"        "groupT:engage"      
+  #[13] "Time1:groupT:engage" "Time2:groupT:engage"
+  
+  # C flat at Time1 goes down Time2, but T goes up by .5 and 
+  # at time 2 it goes up by .7
+  
+  cor2cov <- function (sds, R) outer(sds, sds) * R
+  
+  Sigma <- cor2cov(G.sds, diag(1-G.r, 3)+G.r) # 2 time pieces and 1 id as random effects
+  
+  b <- MASS::mvrnorm(nPart, mu = rep(0, nrow(Sigma)), # random deviation from average model
+                     Sigma = Sigma)                   # Equivalent of betas in fixed-effects
+  
+  nTime <- 6 # Number of total measurements per person
+  
+  DF <- data.frame(id = id <- rep(1:nPart, each = nTime),
+                   Time  = rep(0:5, nPart),
+                   Time1 = c(0, 1, 2, 2, 2, 2),
+                   Time2 = c(0, 0, 0, 1, 2, 3),
+                   group = factor(sample(c("C", "T"), nPart, replace = TRUE)[id], levels = c("C", "T")),
+                    prof = factor(sample(c("Beg", "Med", "Adv"), nPart, replace = TRUE)[id], 
+                                 levels = c("Beg", "Med", "Adv")),  # Putting levels takes first act. as ref.
+                   engage = rbeta(nPart, 2, 5)[id]) 
+  
+  # fixed-effect design matrix
+  X <- model.matrix(~ (Time1+Time2) * group * engage + prof, data = DF)
+  
+  # Random-effects design matrix
+  Z <- model.matrix(~ Time1+Time2, data = DF) 
+  
+  # linear predictors (fixed + random):
+  lin.pred <- as.vector(X %*% betas + rowSums(Z * b[id,]))
+  
+  # outcome y:
+  DF$y <- switch(type, normal = rnorm(nPart * nTime, lin.pred, e), 
+                 logistic = rbinom(nPart * nTime, 1, plogis(lin.pred)), 
+                 poisson = rpois(nPart * nTime, exp(lin.pred)))
+  
+  return(DF)
+}       
        
 #=================================================================================================================================  
   
