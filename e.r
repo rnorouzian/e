@@ -557,7 +557,7 @@ my.penalty <- function(dayslate = 0, dayslate.span = 30){
        
 #=================================================================================================================================  
   
-need <- c("lme4", "nlme", "glmmTMB", "emmeans", "plotrix", "ellipse", "vtree", 'jtools', 'stargazer', 'interactions', 'car', 'tidyverse', 'effects', 'modelr', 'bbmle', 'performance', 'see') 
+need <- c("lme4", "nlme", "glmmTMB", "emmeans", "plotrix", "ellipse", "vtree", 'jtools', 'stargazer', 'interactions', 'car', 'tidyverse', 'effects', 'modelr', 'bbmle', 'performance', 'see','MASS') 
 have <- need %in% rownames(installed.packages())                                    
 if(any(!have)){ install.packages( need[!have] ) }
 
@@ -580,5 +580,6 @@ suppressMessages({
   library('effects') 
   library('bbmle')
   library('performance')
-  library('see') 
+  library('see')
+  library('MASS') 
 })                                   
