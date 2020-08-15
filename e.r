@@ -444,7 +444,7 @@ m
  
 #=================================================================================================================================
 
-# Some hack to turn off unnnedded tick mark on the 3rd and 4th axes of plot effects
+# Some hack to turn off unnneeded tick mark on the 3rd and 4th axes of plot effects
                                     
 plot.efflist <- function (x, selection, rows, cols, graphics = TRUE, 
                           lattice, ...) 
@@ -654,7 +654,7 @@ is.balanced <- function(formula, data, na.action){
        
 #=================================================================================================================================  
   
-need <- c("lme4", "nlme", "glmmTMB", "emmeans", "plotrix", "ellipse", "vtree", 'jtools', 'stargazer', 'interactions', 'car', 'tidyverse', 'effects', 'modelr', 'bbmle', 'performance', 'see','MASS') 
+need <- c("lme4", "nlme", "glmmTMB", "emmeans", "plotrix", "ellipse", "vtree", 'jtools', 'stargazer', 'interactions', 'car', 'tidyverse', 'effects', 'modelr', 'bbmle', 'performance', 'see','MASS', 'psych','haven') 
 have <- need %in% rownames(installed.packages())                                    
 if(any(!have)){ install.packages( need[!have] ) }
 
@@ -679,4 +679,6 @@ suppressMessages({
   library('performance')
   library('see')
   library('MASS') 
+  library('psych') 
+  library('haven') 
 })                                   
