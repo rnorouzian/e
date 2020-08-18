@@ -654,7 +654,7 @@ is.balanced <- function(formula, data, na.action){
        
 #=================================================================================================================================  
   
-need <- c("lme4", "nlme", "glmmTMB", "emmeans", "plotrix", "ellipse", "vtree", 'jtools', 'stargazer', 'interactions', 'car', 'tidyverse', 'effects', 'modelr', 'bbmle', 'performance', 'see','MASS', 'psych','haven') 
+need <- c("lme4", "nlme", "glmmTMB", "emmeans", "plotrix", "ellipse", "vtree", 'jtools', 'stargazer', 'interactions', 'car', 'tidyverse', 'modelr', 'bbmle', 'performance', 'see','MASS', 'psych','haven', 'effects') 
 have <- need %in% rownames(installed.packages())                                    
 if(any(!have)){ install.packages( need[!have] ) }
 
@@ -673,12 +673,12 @@ suppressMessages({
   library('stargazer') 
   library('tidyverse')
   library('modelr')
-  library('car')
-  library('effects') 
+  library('car') 
   library('bbmle')
   library('performance')
   library('see')
   library('MASS') 
   library('psych') 
   library('haven') 
+  library('effects') 
 })                                   
