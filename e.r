@@ -659,25 +659,10 @@ not.have <- need[!(need %in% installed.packages()[,"Package"])]
 if(length(not.have)) install.packages(not.have)
 
 options(warn = -1)
+       
 suppressMessages({ 
-   
-  library('lme4')
-  library('nlme')
-  library('glmmTMB')
-  library('emmeans')
-  library('plotrix')
-  library('ellipse')
-  library('jtools') 
-  library('interactions') 
-  library('stargazer') 
-  library('tidyverse')
-  library('modelr')
-  library('car') 
-  library('bbmle')
-  library('performance')
-  library('see')
-  library('MASS') 
-  library('psych') 
-  library('haven') 
-  library('effects') 
-})                                   
+  
+for(i in need){
+  library(i, character.only = TRUE)
+}
+})                                
