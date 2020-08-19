@@ -306,7 +306,13 @@ post.mixed <- function(fit, formula = NULL, plot = TRUE, by = NULL, var = NULL, 
   
   return(out)
 }      
-                                  
+
+#=================================================================================================================================
+                                                                       
+lo_ave_up <- function(data, vars) sapply(vars, function(x) 
+  setNames(round(mean(data[[x]]) + c(-1, 0, 1)*sd(data[[x]]), 8), 
+           paste0(x, c('-1SD', '.Mean', '+1SD'))), simplify = FALSE)                                    
+                                                                        
 #=================================================================================================================================
                                   
 data.tree <- function(data, toplab = NULL, cex = 1, auto = FALSE, ...){
