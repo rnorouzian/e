@@ -668,7 +668,7 @@ is.balanced <- function(formula, data, na.action){
        
 #=================================================================================================================================  
   
-need <- c("lme4", "nlme", "glmmTMB", "emmeans", "plotrix", "ellipse", 'jtools', 'stargazer', 'interactions', 'car', 'tidyverse', 'modelr', 'bbmle', 'performance', 'see','MASS', 'psych','haven', 'effects') 
+need <- c("lme4", "nlme", "glmmTMB", "emmeans", "plotrix", "ellipse", 'jtools', 'stargazer', 'interactions', 'car','MASS', 'tidyverse', 'modelr', 'bbmle', 'performance', 'see', 'psych','haven', 'effects') 
 not.have <- need[!(need %in% installed.packages()[,"Package"])]
 if(length(not.have)) install.packages(not.have)
 
