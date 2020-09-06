@@ -676,7 +676,7 @@ unique(grep(na_pat, as.character(unlist(data)), value = TRUE))
             
 #=================================================================================================================================  
   
-need <- c("lme4", "nlme", "glmmTMB", "emmeans", "plotrix", "ellipse", 'jtools', 'stargazer', 'interactions', 'car', 'MASS', 'modelr', 'bbmle', 'performance', 'see', 'psych','haven', 'effects','tidyverse') 
+need <- c("lme4", "nlme", "glmmTMB", "emmeans", "plotrix", "ellipse", 'jtools', 'stargazer', 'interactions', 'car', 'MASS', 'modelr', 'bbmle', 'performance', 'see', 'psych','haven', 'effects','tidyverse', 'corrplot') 
 not.have <- need[!(need %in% installed.packages()[,"Package"])]
 if(length(not.have)) install.packages(not.have)
 
