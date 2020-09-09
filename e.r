@@ -575,7 +575,16 @@ na <- function(data, na_pat = '^[[:punct:]]+$'){
 unique(grep(na_pat, as.character(unlist(data)), value = TRUE))
 
 }       
-            
+
+
+#=================================================================================================================================         
+
+total_sigma <- function(fit){ 
+  
+vc <- VarCorr(fit)
+  
+if(inherits(fit, "lme")) sqrt(sum(as.numeric(vc[,"Variance"]), na.rm = TRUE)) else sqrt(sum(as.numeric(c(attr(vc[[1]], "stddev"), attr(vc, "sc")))^2, na.rm = TRUE))
+}       
 #=================================================================================================================================  
   
 need <- c("lme4", "nlme", "glmmTMB", "emmeans", "plotrix", "ellipse", 'jtools', 'stargazer', 'interactions', 'car', 'MASS', 'modelr', 'bbmle', 'performance', 'see', 'psych','haven', 'effects','tidyverse') 
