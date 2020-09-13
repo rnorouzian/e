@@ -584,7 +584,33 @@ total_sigma <- function(fit){
 vc <- VarCorr(fit)
   
 if(inherits(fit, "lme")) sqrt(sum(as.numeric(vc[,"Variance"]), na.rm = TRUE)) else sqrt(sum(as.numeric(c(attr(vc[[1]], "stddev"), attr(vc, "sc")))^2, na.rm = TRUE))
-}       
+}     
+       
+#=================================================================================================================================         
+       
+t.testb <- function(m1, m2, s1, s2, n1, n2 = NA, m0 = 0, var.equal = FALSE, sdif = NA, r = NA, digits = 6){
+  
+  if(var.equal & !is.na(n2))
+    {
+    se <- sqrt( (1/n1 + 1/n2) * ((n1-1)*s1^2 + (n2-1)*s2^2)/(n1+n2-2) ) 
+    df <- n1+n2-2
+  } else if(!var.equal & !is.na(n2))
+    {
+    se <- sqrt( (s1^2/n1) + (s2^2/n2) )
+    df <- ((s1^2/n1 + s2^2/n2)^2)/((s1^2/n1)^2/(n1-1) + (s2^2/n2)^2/(n2-1))
+  }else
+  {
+    se <- if(!is.na(sdif)) sdif/sqrt(n1) else sdif(sdpre = s1, sdpos = s2, r = r)/sqrt(n1)
+    df <- n1 - 1
+  }
+  
+  t <- (m2-m1-m0)/se
+  
+  a <- round(data.frame(mean.dif = m2-m1, std.error = se, t.value = t, p.value = 2*pt(-abs(t),df)), digits)
+  a$paired <- if(is.na(n2)) TRUE else FALSE
+  a    
+}              
+       
 #=================================================================================================================================  
   
 need <- c("lme4", "nlme", "glmmTMB", "emmeans", "plotrix", "ellipse", 'jtools', 'stargazer', 'interactions', 'car', 'MASS', 'modelr', 'bbmle', 'performance', 'see', 'psych','haven', 'effects','tidyverse') 
