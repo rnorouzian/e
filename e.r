@@ -344,18 +344,18 @@ cor2cov <- function (R, sds, names = NULL)
 #================================================================================================================================
                                     
 n_par <- function(...){
-
-f <- function(fit){
-  total <- attr(logLik(fit), "df")
-  fixed <- length(fixef(fit))
-  random <- length(getME(fit,"theta"))
-  error <- if(isLMM(fit)) 1 else 0
-  return(c(total = total, fixed = fixed, random = random, error = error))
-}
-
-m <- as.data.frame(purrr::map_dfr(.x = list(...), .f = f))
-rownames(m) <- substitute(...())
-m
+  
+  f <- function(fit){
+    total <- attr(logLik(fit), "df")
+    fixed <- if(inherits(fit, "lme")) length(fixed.effects(fit)) else length(fixef(fit))
+    random <- if(inherits(fit, "lme")) ncol(random.effects(fit)) else length(getME(fit,"theta"))
+    error <- if(inherits(fit, "lme") || isLMM(fit)) 1 else 0
+    return(c(total = total, fixed = fixed, random = random, error = error))
+  }
+  
+  m <- as.data.frame(purrr::map_dfr(.x = list(...), .f = f))
+  rownames(m) <- substitute(...())
+  m
 }                                    
  
 #=================================================================================================================================
