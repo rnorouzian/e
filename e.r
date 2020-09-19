@@ -1,7 +1,7 @@
 
 Break = "\n<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>\n"
 
-notice = "    Welcome to 'EDP 380C.16 Hierarchical Linear Modeling'.
+notice = "   Welcome to 'EDP 380C.16 Hierarchical Linear Modeling'.
    Programs developed by Reza Norouzian, Copyright (C) 2019-present"
 
 message(Break, notice, Break)
@@ -610,6 +610,10 @@ t.testb <- function(m1, m2, s1, s2, n1, n2 = NA, m0 = 0, var.equal = FALSE, sdif
   a$paired <- if(is.na(n2)) TRUE else FALSE
   a    
 }              
+
+#=================================================================================================================================
+       
+G_matrix <- function(fit) as.matrix(Matrix::bdiag(VarCorr(fit)))       
        
 #=================================================================================================================================  
   
