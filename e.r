@@ -629,7 +629,7 @@ need <- c("lme4", "nlme", "glmmTMB", "emmeans", "plotrix", "ellipse", 'jtools', 
 not.have <- need[!(need %in% installed.packages()[,"Package"])]
 if(length(not.have)) install.packages(not.have)
 
-options(warn = -1)
+#options(warn = -1)
        
 suppressMessages({ 
   
