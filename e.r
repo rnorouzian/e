@@ -625,7 +625,8 @@ if(inherits(fit, c("lmerMod", "lmerModLmerTest", "lme4"))){
        
 #=================================================================================================================================  
   
-need <- c("lme4", "nlme", "glmmTMB", "emmeans", "plotrix", "ellipse", 'jtools', 'stargazer', 'interactions', 'car', 'MASS', 'modelr', 'bbmle', 'performance', 'see', 'psych','haven', 'effects','tidyverse') 
+need <- c("lme4", "nlme", "glmmTMB", "emmeans", "plotrix", "ellipse", 'jtools', 'stargazer', 'interactions', 'car', 'MASS', 'modelr', 
+          'bbmle', 'performance', 'see', 'psych','haven', 'effects','tidyverse','parallel','optimx','minqa') 
 not.have <- need[!(need %in% installed.packages()[,"Package"])]
 if(length(not.have)) install.packages(not.have)
 
