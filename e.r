@@ -622,7 +622,73 @@ if(inherits(fit, c("lmerMod", "lmerModLmerTest", "lme4"))){
 } else if(inherits(fit, "lme")) { getVarCov(fit) }
 
 }       
+   
+ #=================================================================================================================================  
+      
        
+converge1 <- function(fit, parallel = c("multicore","snow","no")[1], maxfun = 2e5){
+  
+  diff_optims <- lme4::allFit(fit, maxfun = maxfun, parallel = parallel, ncpus = detectCores())
+  is.OK <- sapply(diff_optims, is, "merMod")
+  diff_optims.OK <- diff_optims[is.OK]
+  
+  convergence_results <- lapply(diff_optims.OK,function(x) x@optinfo$conv$lme4$messages)
+  working_indices <- sapply(convergence_results, is.null)
+  if(sum(working_indices)==0){
+    print("No algorithms from allFit converged.")
+    print("You may still be able to use the results, but proceed with extreme caution.")
+    first_fit <- NULL
+  } else {
+    first_fit <- diff_optims[working_indices][[1]]
+  }
+  first_fit
+}
+
+#===============================
+
+
+converge2 <- function(fit){
+
+optimx_options <- c("L-BFGS-B", "nlminb", "nlm", "bobyqa", "nmkb", "hjkb")
+
+for(i in 1:length(optimx_options)){
+  model_flex <- update(fit,  
+                     control = lmerControl(optimizer = "optimx", optCtrl = list(method = optimx_options[i],
+                                                          maxit = 1e9)))
+  if(is.null(model_flex@optinfo$conv$lme4$messages)){
+    print(paste0("One of the optimx options, ", optimx_options[i],", worked!"))
+    print(summary(model_flex))
+    break
+  } else { print(paste0("No optimx options worked:("))}
+ }
+}
+
+#===============================
+
+converge3 <- function(fit){
+  
+algoptions <- c("NLOPT_LN_PRAXIS", "NLOPT_GN_CRS2_LM",
+                "NLOPT_LN_COBYLA", "NLOPT_LN_NEWUOA",
+                "NLOPT_LN_NEWUOA_BOUND", "NLOPT_LN_NELDERMEAD",
+                "NLOPT_LN_SBPLX", "NLOPT_LN_BOBYQA")
+
+for(i in 1:length(algoptions)){
+  
+  model_flex <- update(fit, control = lmerControl(optimizer = "nloptwrap", optCtrl = list(method = algoptions[i],
+                                                                                         maxit = 1e9,
+                                                                                         maxeval = 1e9,
+                                                                                         maxfun = 1e9,
+                                                                                         xtol_abs = 1e-9,
+                                                                                         ftol_abs = 1e-9)))
+  if(is.null(model_flex@optinfo$conv$lme4$messages)){
+    print(paste0("One of the nloptwrap options, ", algoptions[i],", worked!"))
+    print(summary(model_flex))
+    break
+  } else { print(paste0("No nloptwrap options worked:("))}
+}
+
+}       
+         
 #=================================================================================================================================  
   
 need <- c("lme4", "nlme", "glmmTMB", "emmeans", "plotrix", "ellipse", 'jtools', 'stargazer', 'interactions', 'car', 'MASS', 'modelr', 
