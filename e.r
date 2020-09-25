@@ -692,7 +692,7 @@ for(i in 1:length(algoptions)){
 #=================================================================================================================================  
   
 need <- c("lme4", "nlme", "glmmTMB", "emmeans", "plotrix", "ellipse", 'jtools', 'stargazer', 'interactions', 'car', 'MASS', 'modelr', 
-          'bbmle', 'performance', 'see', 'psych','haven', 'effects','tidyverse','parallel','optimx','minqa') 
+          'bbmle', 'performance', 'see', 'psych','haven', 'effects','tidyverse','parallel','optimx','minqa','blme') 
 not.have <- need[!(need %in% installed.packages()[,"Package"])]
 if(length(not.have)) install.packages(not.have)
 
