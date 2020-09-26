@@ -479,6 +479,8 @@ sim.piece <- function(nPart = 100, G.r = .3, G.sds = c(2, 1, 2), e = .1,
   
   type <- match.arg(type) 
   set.seed(seed)
+   
+  # TRUE MODEL: y ~ (Time1+Time2) * group * engage + prof + (Time1 + Time2 | id) 
   ##Betas: 
   #[1] "(Intercept)"         "Time1"               "Time2"               "groupT"             
   #[5] "engage"              "profMed"             "profAdv"             "Time1:groupT"       
