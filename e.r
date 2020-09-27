@@ -757,7 +757,7 @@ as.matrix(res)
 
 
 sim_m4 <- function(n_cluster, ave_cluster_n, G = cor2G(sd.int = 2, sd.slope = .275, rho = 1), G.r = .3, G.sds = c(6, .01), betas = c(12, 3, 2, -1.3),
-                         e = .1, empirical = TRUE, seed = NULL, output_data = FALSE, re.var = "var"){
+                         e = 3.2, empirical = TRUE, seed = NULL, output_data = FALSE, re.var = "sd"){
 
 # math ~ ses * sector + (ses | sch.id)  
 set.seed(seed)
@@ -768,8 +768,6 @@ if(auto){
 hsb <- read.csv('https://raw.githubusercontent.com/rnorouzian/e/master/hsb.csv')
 n_cluster <- 160
 ave_cluster_n <- hsb %>% count(sch.id) %>% pull(n)
-#r <- range(hsb$ses)
-#find.norm(r[1], r[2]) # -.533 
 }
   
 cor2cov <- function (sds, R) outer(sds, sds) * R
@@ -779,10 +777,12 @@ cor2cov <- function (sds, R) outer(sds, sds) * R
 b <- MASS::mvrnorm(n_cluster, mu = rep(0, nrow(G)), 
                    Sigma = G, empirical = empirical)                   
 
+#sector = factor(hsb$sector)
+#factor(sample(c("pub", "cath"), n_cluster, replace = TRUE)[sch.id], levels = c("pub", "cath"))
 
 DF <- data.frame(sch.id = sch.id <- rep(1:n_cluster, if(auto) ave_cluster_n else each = ave_cluster_n), 
-                  sector = factor(sample(c("pub", "cath"), n_cluster, replace = TRUE)[sch.id], levels = c("pub", "cath")),
-                  ses = rnorm(n_cluster, -.533)[sch.id])
+                  sector = factor(hsb$sector),
+                  ses = rnorm(n_cluster, -.5, .65)[sch.id])
 
 data_size <- nrow(DF)
 
