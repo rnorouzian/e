@@ -691,6 +691,31 @@ for(i in 1:length(algoptions)){
 
 }       
 
+
+#==================================================================================================================================
+                                
+                                
+par_restart <- function(fit){
+  
+strict_tol <- lmerControl(optCtrl=list(xtol_abs =1e-8, ftol_abs=1e-8))  
+  
+  if (isLMM(fit)) {
+    pars <- getME(fit,"theta")
+  } else {
+    pars <- getME(fit, c("theta","fixef"))
+  }
+  
+  restart <- update(fit, start = pars)
+  
+  pars_x <- runif(length(pars),pars/1.01,pars*1.01)
+  
+  restart2 <- update(fit, start=pars_x,
+                         control=strict_tol)
+  
+  list(restart = summary(restart), restart2 = summary(restart2))
+  
+}                                
+                                
                                 
 #=================================================================================================================================
                                 
