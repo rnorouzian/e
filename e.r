@@ -264,8 +264,14 @@ plot.prof <- function(fit){
 latent.reg <- function(fit, formula, group.id, std = FALSE,
                        sing.check = TRUE, ridge.constant = 0, tol = 1e-12) 
 {
-  
-  R <- attr(lme4::VarCorr(fit)[[group.id]], "correlation")
+  R <- SDs <- matrix()
+  if (regexpr("merMod", class(fit)) > 0) {
+    R <- attr(lme4::VarCorr(fit)[[group.id]], "correlation")
+    SDs <- diag(attr(lme4::VarCorr(fit)[[group.id]], "stddev"))
+  } else if (class(fit) == "lme") {
+    R <- nlme::corMatrix(fit$modelStruct[[1]])[[group.id]]
+    SDs <- diag(fit$sigma * attr(nlme::corMatrix(fit$modelStruct[[1]])[[group.id]], "stdDev"))
+  } else stop("fitted model must be lme4 or nlme fit", call. = FALSE)
   vars <- colnames(R)
   formula <- as.character(formula)
   out_loc <- which(vars == formula[2])
@@ -284,42 +290,54 @@ latent.reg <- function(fit, formula, group.id, std = FALSE,
   if (std) {
     res <- base::solve(R[pred_loc, pred_loc], R[out_loc, pred_loc], tol = tol)
   } else {
-    SDs <- diag(attr(lme4::VarCorr(fit)[[group.id]], "stddev"))
-    (C <- SDs %*% R %*% SDs)
+    C <- SDs %*% R %*% SDs
     res <- base::solve(C[pred_loc, pred_loc], C[out_loc, pred_loc], tol = tol)
   }
   names(res) <- if(length(pred.names) > 1) colnames(R[pred_loc, pred_loc]) else pred.names
   return(res)
 }
 
-
 #=================================================================================================================================================
 
 
-latent.lmer <- function (fit, formula, group.id, std = TRUE, digits = 3, prog.bar = "none",
-                             sing.check = TRUE, ridge.constant = 1e-06, tol = 1e-12,
-                             seed = 123, nsim = 499, level = .95, parallel = c("no", "multicore", "snow")[2], ncpus = 7) {
+latent.me <- function (fit, formula, group.id, std = TRUE, digits = 3, prog.bar = "none",
+                       sing.check = TRUE, ridge.constant = 1e-06, tol = 1e-12,
+                       seed = 123, nsim = 499, level = .95, parallel = c("no", "multicore", "snow")[2], ncpus = 7) {
   
   formals(latent.reg)[formalArgs(latent.reg)[-1L]] <- c(
     formula, group.id, std, sing.check, ridge.constant, tol)
   
-  boot.res <- lme4::bootMer(
-    fit, nsim = nsim, seed = seed, .progress = prog.bar,
-    parallel = parallel, ncpus = ncpus,
-    FUN = latent.reg)
-  
-  #if(inherits(boot.res, "try-error")) stop("Change 'parallel' and/or 'ncpus' values.")
+  boot.res <- list()
+  if (regexpr("merMod", class(fit)) > 0) {
+    boot.res <- lme4::bootMer(
+      fit, nsim = nsim, seed = seed, .progress = prog.bar,
+      parallel = parallel, ncpus = ncpus,
+      FUN = latent.reg)
+  } else if (class(fit) == "lme") {
+    boot.res <- lmeresampler::parametric_bootstrap(fit, latent.reg, nsim)
+  } else stop("fitted model must be lme4 or nlme fit", call. = FALSE)
   
   se.s <- apply(boot.res$t, 2, sd, na.rm = TRUE)
   z.value <- abs((2 * boot.res$t0 - colMeans(boot.res$t, na.rm = TRUE)) / se.s)
   
   boot.p <- 2 * pnorm(-z.value)
   
-  ci <- confint(boot.res, level = level, type = "norm")
+  lower <- upper <- array()
+  if (regexpr("merMod", class(fit)) > 0) {
+    ci <- confint(boot.res, level = level, type = "norm")
+    lower <- ci[, 1]
+    upper <- ci[, 2]
+  } else if (class(fit) == "lme") {
+    ci <- sapply(1:length(se.s),
+                 function (i) boot::boot.ci(boot.res, conf = level, type = "norm", index = i)$normal)
+    lower <- ci[2, ]
+    upper <- ci[3, ]
+  }
   
-  round(data.frame(est. = boot.res$t0, SE = se.s, z.value = z.value, p.value = boot.p,
-    lower = ci[[1]], upper = ci[[2]]), digits)
-}                                      
+  round(data.frame(
+    est. = boot.res$t0, SE = se.s, z.value = z.value, p.value = boot.p,
+    lower = lower, upper = upper), digits)
+}        
 
 #=================================================================================================================================
                                     
