@@ -646,7 +646,7 @@ converge1 <- function(fit, parallel = c("multicore","snow","no")[1], maxfun = 2e
   first_fit
 }
 
-#===============================
+#===============================================================================================================================
 
 
 converge2 <- function(fit){
@@ -665,7 +665,7 @@ for(i in 1:length(optimx_options)){
  }
 }
 
-#===============================
+#===============================================================================================================================
 
 converge3 <- function(fit){
   
@@ -716,6 +716,19 @@ strict_tol <- lmerControl(optCtrl=list(xtol_abs =1e-8, ftol_abs=1e-8))
   
 }                                
                                 
+#=================================================================================================================================
+
+                                
+par_compare <- function(fit){
+  
+  fit.all <- lme4::allFit(fit)
+  ss <- summary(fit.all)
+  list(fixef = ss$ fixef,            ## fixed effects
+  logLike = ss$ llik,                ## log-likelihoods
+  SDs_Cor = ss$ sdcor,               ## SDs and correlations
+  Cholesky = ss$ theta,               ## Cholesky factors
+  did_algorithms_work_OK = ss$ which.OK)     ## which fits worked
+}                                
                                 
 #=================================================================================================================================
                                 
@@ -766,7 +779,7 @@ mu.norm <- find.norm <- function(low, high, cover = .99, digits = 6){
   }
 }                                                 
                                 
-#===============================
+#========================================================================================================================================================================
                                 
                                 
 cor2G <- function(sd.int = 6, sd.slope = .01, rho = .3){
