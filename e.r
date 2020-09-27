@@ -748,6 +748,29 @@ par_compare <- function(fit){
   did_algorithms_work_OK = ss$ which.OK)     ## which fits worked
 }                                
 
+
+#=================================================================================================================================
+                                
+                                
+par_hess_grad <- function(fit){
+
+devfun <- update(fit, devFunOnly = TRUE)
+
+if (isLMM(fit)) {
+  pars <- getME(fit,"theta")
+} else {
+  pars <- getME(fit, c("theta","fixef"))
+}
+if (require("numDeriv")) {
+  hessianA <- hessian(devfun, unlist(pars))
+  gradientA <- grad(devfun, unlist(pars))
+}
+lme4_cal <- fit@optinfo$derivs
+
+list(lme4_hessian = lme4_cal$Hessian,external_hessian = hessianA, lme4_gradient = lme4_cal$gradient, 
+external_gradient = gradientA)
+}                                
+                                
                                 
 #================================================================================================================================
                                 
