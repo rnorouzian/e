@@ -771,19 +771,7 @@ list(lme4_hessian = lme4_cal$Hessian,external_hessian = hessianA, lme4_gradient 
 external_gradient = gradientA)
 }                                
                                 
-                                
-#================================================================================================================================
-                                
-re_pca <- function(fit){
-
-h <- summary(rePCA(fit))
-
-vc <- VarCorr(fit)
-
-colnames(h[[1]]$importance) <- rownames(vc[[1]])
-return(h)
-}                                
-                                                          
+                                                                                        
 #=================================================================================================================================
                                 
                                 
@@ -893,7 +881,7 @@ DF$math <- rnorm(data_size, lin.pred, e)
 fit <- lmer(math ~ ses * sector + (ses | sch.id), data = DF)
 G <- G_matrix(fit)
 
-list(summary = summ(fit, re.variance = re.var, digits = 8), G_matrix = G, G_cor_matrix = stats::cov2cor(G), PCA = re_pca(fit), data = if(output_data) DF else NULL)
+list(summary = summ(fit, re.variance = re.var, digits = 8), G_matrix = G, G_cor_matrix = stats::cov2cor(G), PCA = G_pca(fit), data = if(output_data) DF else NULL)
 
 }
                                 
