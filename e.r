@@ -896,7 +896,7 @@ G_pca <- function(fit) {
   Map(function(x, z) {
     colnames(x$importance) <- paste(z, unique(sapply(vc, colnames)), sep = '_')
     x
-  }, pca_vc, names(vc))
+  }, pca_vc, names(pca_vc))
   
 }
      
