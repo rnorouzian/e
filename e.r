@@ -897,7 +897,21 @@ list(summary = summ(fit, re.variance = re.var, digits = 8), G_matrix = G, G_cor_
 
 }
                                 
-                                
+#=================================================================================================================================
+     
+
+G_pca <- function(fit) {
+  
+  vc <- VarCorr(fit)
+  pca_vc <- summary(rePCA(fit))
+  
+  Map(function(x, z) {
+    colnames(x$importance) <- paste(z, unique(sapply(vc, colnames)), sep = '_')
+    x
+  }, pca_vc, names(vc))
+  
+}
+     
 #=================================================================================================================================  
   
 need <- c("lme4", "nlme", "glmmTMB", "emmeans", "plotrix", "ellipse", 'jtools', 'stargazer', 'interactions', 'car', 'MASS', 'modelr', 
