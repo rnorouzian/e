@@ -836,7 +836,7 @@ as.matrix(res)
 #==========================================================================================================================================================================================
 
 
-sim_m4 <- function(n_cluster, ave_cluster_n, G = cor2G(sd.int = 2, sd.slope = .275, rho = 1), G.r = .3, G.sds = c(6, .01), betas = c(12, 3, 2, -1.3),
+sim_m4b <- function(n_cluster, ave_cluster_n, G = cor2G(sd.int = 2, sd.slope = .275, rho = 1), G.r = .3, G.sds = c(6, .01), betas = c(12, 3, 2, -1.3),
                          e = 3.2, empirical = TRUE, seed = NULL, output_data = FALSE, re.var = "sd"){
 
 # math ~ ses * sector + (ses | sch.id)  
@@ -884,7 +884,58 @@ G <- G_matrix(fit)
 list(fit = fit, G_matrix = G, G_cor_matrix = stats::cov2cor(G), PCA = G_pca(fit), data = if(output_data) DF else NULL)
 
 }
-                                
+          
+     
+#===================================================================================================================================     
+     
+sim_m4 <- function(n_cluster, ave_cluster_n, G = cor2G(sd.int = 2, sd.slope = .275, rho = 1), G.r = .3, G.sds = c(6, .01), betas = c(12, 3, 2, -1.3),
+                         e = 3.2, empirical = TRUE, seed = NULL, output_data = FALSE, re.var = "sd"){
+
+# math ~ ses * sector + (ses | sch.id)  
+set.seed(seed)
+
+auto <- missing(n_cluster) | missing(ave_cluster_n)  
+  
+if(auto){
+hsb <- read.csv('https://raw.githubusercontent.com/rnorouzian/e/master/hsb.csv')
+n_cluster <- 160
+ave_cluster_n <- hsb %>% count(sch.id) %>% pull(n)
+}
+  
+cor2cov <- function (sds, R) outer(sds, sds) * R
+
+#G <- cor2cov(G.sds, diag(1-G.r, length(G.sds))+G.r)
+
+b <- MASS::mvrnorm(n_cluster, mu = rep(0, nrow(G)), 
+                   Sigma = G, empirical = empirical)                   
+
+#sector = factor(hsb$sector)
+#factor(sample(c("pub", "cath"), n_cluster, replace = TRUE)[sch.id], levels = c("pub", "cath"))
+
+DF <- data.frame(sch.id = sch.id <- rep(1:n_cluster, if(auto) ave_cluster_n else each = ave_cluster_n), 
+                  sector = factor(hsb$sector),
+                  ses = rnorm(n_cluster, -.5, .65)[sch.id])
+
+data_size <- nrow(DF)
+
+# fixed-effect design matrix
+X <- model.matrix(~ ses*sector, data = DF)
+
+# Random-effects design matrix
+Z <- model.matrix(~ ses, data = DF)
+
+# linear predictors (fixed + random):
+lin.pred <- as.vector(X %*% betas + rowSums(Z * b[sch.id,]))
+
+# outcome math:
+DF$math <- rnorm(data_size, lin.pred, e)
+
+fit <- lmer(math ~ ses * sector + (ses | sch.id), data = DF)
+
+return(fit)
+
+}     
+     
 #=================================================================================================================================
      
 
