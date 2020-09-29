@@ -881,7 +881,7 @@ DF$math <- rnorm(data_size, lin.pred, e)
 fit <- lmer(math ~ ses * sector + (ses | sch.id), data = DF)
 G <- G_matrix(fit)
 
-list(summary = summ(fit, re.variance = re.var, digits = 8), G_matrix = G, G_cor_matrix = stats::cov2cor(G), PCA = G_pca(fit), data = if(output_data) DF else NULL)
+list(fit = fit, G_matrix = G, G_cor_matrix = stats::cov2cor(G), PCA = G_pca(fit), data = if(output_data) DF else NULL)
 
 }
                                 
