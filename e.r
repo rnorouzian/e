@@ -643,11 +643,19 @@ if(inherits(fit, c("lmerMod", "lmerModLmerTest", "lme4"))){
 
 }       
    
- #=================================================================================================================================  
-      
-       
+#=================================================================================================================================  
+    
+has_warning <- function(m) {
+  df <- summary(m)
+  !is.null(df$optinfo$conv$lme4$messages) && 
+    grepl('failed to converge', df$optinfo$conv$lme4$messages)
+}
+
+#===============================================================================================================================
+
 converge1 <- function(fit, parallel = c("multicore","snow","no")[1], maxfun = 2e5){
   
+  if(has_warning(fit)){
   diff_optims <- lme4::allFit(fit, maxfun = maxfun, parallel = parallel, ncpus = detectCores())
   is.OK <- sapply(diff_optims, is, "merMod")
   diff_optims.OK <- diff_optims[is.OK]
@@ -662,60 +670,68 @@ converge1 <- function(fit, parallel = c("multicore","snow","no")[1], maxfun = 2e
     first_fit <- diff_optims[working_indices][[1]]
   }
   first_fit
+  } else if(isSingular(fit)){ message("The model has converged but is singular.") 
+  } else { message("No issues found with the model.")}
 }
-
+                                
 #===============================================================================================================================
 
 
 converge2 <- function(fit){
+  
+  if(has_warning(fit)){
+  optimx_options <- c("L-BFGS-B", "nlminb", "nlm", "bobyqa", "nmkb", "hjkb")
+  
+  for(i in 1:length(optimx_options)){
+    model_flex <- update(fit,  
+                         control = lmerControl(optimizer = "optimx", optCtrl = list(method = optimx_options[i],
+                                                                                    maxit = 1e9)))
+    if(is.null(model_flex@optinfo$conv$lme4$messages)){
+      print(paste0("One of the optimx options, ", optimx_options[i],", worked!"))
+      print(summary(model_flex))
+      break
+    } else { print(paste0("No optimx options worked:("))}
+  }
+  } else if(isSingular(fit)){ message("The model has converged but is singular.") 
+  } else { message("No issues found with the model.")}
 
-optimx_options <- c("L-BFGS-B", "nlminb", "nlm", "bobyqa", "nmkb", "hjkb")
-
-for(i in 1:length(optimx_options)){
-  model_flex <- update(fit,  
-                     control = lmerControl(optimizer = "optimx", optCtrl = list(method = optimx_options[i],
-                                                          maxit = 1e9)))
-  if(is.null(model_flex@optinfo$conv$lme4$messages)){
-    print(paste0("One of the optimx options, ", optimx_options[i],", worked!"))
-    print(summary(model_flex))
-    break
-  } else { print(paste0("No optimx options worked:("))}
- }
 }
-
 #===============================================================================================================================
 
 converge3 <- function(fit){
   
-algoptions <- c("NLOPT_LN_PRAXIS", "NLOPT_GN_CRS2_LM",
-                "NLOPT_LN_COBYLA", "NLOPT_LN_NEWUOA",
-                "NLOPT_LN_NEWUOA_BOUND", "NLOPT_LN_NELDERMEAD",
-                "NLOPT_LN_SBPLX", "NLOPT_LN_BOBYQA")
-
-for(i in 1:length(algoptions)){
+  if(has_warning(fit)){
+  algoptions <- c("NLOPT_LN_PRAXIS", "NLOPT_GN_CRS2_LM",
+                  "NLOPT_LN_COBYLA", "NLOPT_LN_NEWUOA",
+                  "NLOPT_LN_NEWUOA_BOUND", "NLOPT_LN_NELDERMEAD",
+                  "NLOPT_LN_SBPLX", "NLOPT_LN_BOBYQA")
   
-  model_flex <- update(fit, control = lmerControl(optimizer = "nloptwrap", optCtrl = list(method = algoptions[i],
-                                                                                         maxit = 1e9,
-                                                                                         maxeval = 1e9,
-                                                                                         maxfun = 1e9,
-                                                                                         xtol_abs = 1e-9,
-                                                                                         ftol_abs = 1e-9)))
-  if(is.null(model_flex@optinfo$conv$lme4$messages)){
-    print(paste0("One of the nloptwrap options, ", algoptions[i],", worked!"))
-    print(summary(model_flex))
-    break
-  } else { print(paste0("No nloptwrap options worked:("))}
+  for(i in 1:length(algoptions)){
+    
+    model_flex <- update(fit, control = lmerControl(optimizer = "nloptwrap", optCtrl = list(method = algoptions[i],
+                                                                                            maxit = 1e9,
+                                                                                            maxeval = 1e9,
+                                                                                            maxfun = 1e9,
+                                                                                            xtol_abs = 1e-9,
+                                                                                            ftol_abs = 1e-9)))
+    if(is.null(model_flex@optinfo$conv$lme4$messages)){
+      print(paste0("One of the nloptwrap options, ", algoptions[i],", worked!"))
+      print(summary(model_flex))
+      break
+    } else { print(paste0("No nloptwrap options worked:("))}
+  }
+  
+  } else if(isSingular(fit)){ message("The model has converged but is singular.") 
+  } else { message("No issues found with the model.")}    
+
 }
-
-}       
-
-
 #==================================================================================================================================
-                                
-                                
+
+
 par_restart <- function(fit){
   
-strict_tol <- lmerControl(optCtrl=list(xtol_abs =1e-8, ftol_abs=1e-8))  
+  if(has_warning(fit)){
+  strict_tol <- lmerControl(optCtrl=list(xtol_abs =1e-8, ftol_abs=1e-8))  
   
   if (isLMM(fit)) {
     pars <- getME(fit,"theta")
@@ -728,26 +744,32 @@ strict_tol <- lmerControl(optCtrl=list(xtol_abs =1e-8, ftol_abs=1e-8))
   pars_x <- runif(length(pars),pars/1.01,pars*1.01)
   
   restart2 <- update(fit, start=pars_x,
-                         control=strict_tol)
+                     control=strict_tol)
   
   list(restart = summary(restart), restart2 = summary(restart2))
   
-}                                
-                                
+  } else if(isSingular(fit)){ message("The model has converged but is singular.") 
+  } else { message("No issues found with the model.")}                                 
+
+}
 #=================================================================================================================================
 
-                                
+
 par_compare <- function(fit){
   
+  if(has_warning(fit)){
   fit.all <- lme4::allFit(fit)
   ss <- summary(fit.all)
   list(fixef = ss$ fixef,            ## fixed effects
-  logLike = ss$ llik,                ## log-likelihoods
-  SDs_Cor = ss$ sdcor,               ## SDs and correlations
-  Cholesky = ss$ theta,               ## Cholesky factors
-  did_algorithms_work_OK = ss$ which.OK)     ## which fits worked
-}                                
+       logLike = ss$ llik,                ## log-likelihoods
+       SDs_Cor = ss$ sdcor,               ## SDs and correlations
+       Cholesky = ss$ theta,               ## Cholesky factors
+       did_algorithms_work_OK = ss$ which.OK)     ## which fits worked
+  
+  } else if(isSingular(fit)){ message("The model has converged but is singular.") 
+  } else { message("No issues found with the model.")}                                
 
+}
 
 #=================================================================================================================================
                                 
