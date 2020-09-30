@@ -669,7 +669,9 @@ converge1 <- function(fit, parallel = c("multicore","snow","no")[3], maxfun = 1e
     } else {
       first_fit <- diff_optims[working_indices][[1]]
     }
-  } else if(isSingular(fit)){ message("The model has converged but is singular.") 
+    if(isSingular(first_fit, tol = 1e-3))  message("The model is singular.") else first_fit
+    
+  } else if(isSingular(fit, tol = 1e-3)){ message("The model has converged but is singular.") 
   } else { message("No issues found with the model.")}
 }
                                 
