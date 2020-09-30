@@ -653,10 +653,10 @@ has_warning <- function(m) {
 
 #===============================================================================================================================
 
-converge1 <- function(fit, parallel = c("multicore","snow","no")[1], maxfun = 2e5){
+converge1 <- function(fit, parallel = c("multicore","snow","no")[3], maxfun = 1e5){
   
   if(has_warning(fit)){
-  diff_optims <- lme4::allFit(fit, maxfun = maxfun, parallel = parallel, ncpus = detectCores())
+  diff_optims <- lme4::allFit(fit, maxfun = maxfun, parallel = parallel, ncpus = getOption("allFit.ncpus", 1L))
   is.OK <- sapply(diff_optims, is, "merMod")
   diff_optims.OK <- diff_optims[is.OK]
   
