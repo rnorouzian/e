@@ -679,20 +679,22 @@ converge1 <- function(fit, parallel = c("multicore","snow","no")[3], maxfun = 1e
 converge2 <- function(fit){
   
   if(has_warning(fit)){
-  optimx_options <- c("L-BFGS-B", "nlminb", "nlm", "bobyqa", "nmkb", "hjkb")
-  
-  for(i in 1:length(optimx_options)){
-    model_flex <- update(fit,  
-                         control = lmerControl(optimizer = "optimx", optCtrl = list(method = optimx_options[i])))
-    if(is.null(model_flex@optinfo$conv$lme4$messages)){
-      print(paste0("One of the optimx options, ", optimx_options[i],", worked!"))
-      print(summary(model_flex))
-      break
-    } else { print(paste0("No optimx options worked:("))}
-  }
-  } else if(isSingular(fit)){ message("The model has converged but is singular.") 
+    optimx_options <- c("L-BFGS-B", "nlminb", "nlm", "bobyqa", "nmkb", "hjkb")
+    
+    for(i in 1:length(optimx_options)){
+      model_flex <- update(fit,  
+                           control = lmerControl(optimizer = "optimx", optCtrl = list(method = optimx_options[i])))
+      if(is.null(model_flex@optinfo$conv$lme4$messages)){
+        print(paste0("One of the optimx options, ", optimx_options[i],", worked!"))
+        
+        if(isSingular(model_flex, tol = 1e-3)) message("The model has converged but is singular.")
+        print(summary(model_flex))
+        break
+      } else { print(paste0("No optimx options worked:("))}
+    }
+  } else if(isSingular(fit, tol = 1e-3)){ message("The model has converged but is singular.") 
   } else { message("No issues found with the model.")}
-
+  
 }
 #===============================================================================================================================
 
