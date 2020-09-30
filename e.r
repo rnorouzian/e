@@ -656,20 +656,19 @@ has_warning <- function(m) {
 converge1 <- function(fit, parallel = c("multicore","snow","no")[3], maxfun = 1e5){
   
   if(has_warning(fit)){
-  diff_optims <- lme4::allFit(fit, maxfun = maxfun, parallel = parallel, ncpus = getOption("allFit.ncpus", 1L))
-  is.OK <- sapply(diff_optims, is, "merMod")
-  diff_optims.OK <- diff_optims[is.OK]
-  
-  convergence_results <- lapply(diff_optims.OK,function(x) x@optinfo$conv$lme4$messages)
-  working_indices <- sapply(convergence_results, is.null)
-  if(sum(working_indices)==0){
-    print("No algorithms from allFit converged.")
-    print("You may still be able to use the results, but proceed with extreme caution.")
-    first_fit <- NULL
-  } else {
-    first_fit <- diff_optims[working_indices][[1]]
-  }
-  first_fit
+    diff_optims <- lme4::allFit(fit, maxfun = maxfun, parallel = parallel)
+    is.OK <- sapply(diff_optims, is, "merMod")
+    diff_optims.OK <- diff_optims[is.OK]
+    
+    convergence_results <- lapply(diff_optims.OK,function(x) x@optinfo$conv$lme4$messages)
+    working_indices <- sapply(convergence_results, is.null)
+    if(sum(working_indices)==0){
+      print("No algorithms from allFit converged.")
+      print("You may still be able to use the results, but proceed with extreme caution.")
+      first_fit <- NULL
+    } else {
+      first_fit <- diff_optims[working_indices][[1]]
+    }
   } else if(isSingular(fit)){ message("The model has converged but is singular.") 
   } else { message("No issues found with the model.")}
 }
