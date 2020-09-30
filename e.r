@@ -633,14 +633,19 @@ t.testb <- function(m1, m2, s1, s2, n1, n2 = NA, m0 = 0, var.equal = FALSE, sdif
 
 #=================================================================================================================================
        
-G_matrix <- function(fit) {
-  
-vc <- VarCorr(fit)
-
-if(inherits(fit, c("lmerMod", "lmerModLmerTest", "lme4"))){
-  as.matrix(Matrix::bdiag(vc))       
-} else if(inherits(fit, "lme")) { getVarCov(fit) }
-
+G_matrix <- function(fit){
+  vc <- VarCorr(fit)
+  if(length(vc)==1)
+  {
+    y <- as.matrix(Matrix::bdiag(vc))
+  } else
+  {
+    z <- do.call(rbind,vc)
+    y <- as.matrix(Matrix::bdiag(vc))
+    dimnames(y)[[1]] <- rownames(z)
+    dimnames(y)[[2]] <- rownames(z)
+  }
+  return(y)
 }       
    
 #=================================================================================================================================  
