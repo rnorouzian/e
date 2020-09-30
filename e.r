@@ -684,8 +684,7 @@ converge2 <- function(fit){
   
   for(i in 1:length(optimx_options)){
     model_flex <- update(fit,  
-                         control = lmerControl(optimizer = "optimx", optCtrl = list(method = optimx_options[i],
-                                                                                    maxit = 1e9)))
+                         control = lmerControl(optimizer = "optimx", optCtrl = list(method = optimx_options[i])))
     if(is.null(model_flex@optinfo$conv$lme4$messages)){
       print(paste0("One of the optimx options, ", optimx_options[i],", worked!"))
       print(summary(model_flex))
