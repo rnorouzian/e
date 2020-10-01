@@ -954,11 +954,11 @@ b <- MASS::mvrnorm(n_cluster, mu = rep(0, nrow(G)),
                    Sigma = G, empirical = empirical)                   
 
 #sector = factor(hsb$sector)
-#factor(sample(c("pub", "cath"), n_cluster, replace = TRUE)[sch.id], levels = c("pub", "cath"))
+#sector = factor(sample(c("pub", "cath"), n_cluster, replace = TRUE)[sch.id], levels = c("pub", "cath"))
 
 DF <- data.frame(sch.id = sch.id <- rep(1:n_cluster, if(auto) ave_cluster_n else each = ave_cluster_n), 
                   sector = factor(hsb$sector),
-                  ses = rnorm(n_cluster, -.5, .65)[sch.id])
+                  ses = rnorm(if(auto) nrow(hsb) else n_cluster*ave_cluster_n, -.5, .65))
 
 data_size <- nrow(DF)
 
@@ -1003,7 +1003,46 @@ scale_fit <- function(fit){
 summary(jtools::scale_mod(fit))
   
 }       
-     
+
+ 
+#=================================================================================================================================  
+                 
+                 
+sim_sng <- function(n_cluster = 10, ave_cluster_n = 15, G.r = 0, G.sds = c(2, 1, 1, 1), betas = c(-10, 10, 10, 10),
+                   e = 2, empirical = FALSE, seed = NULL, output_data = FALSE){
+  
+  # y ~ A + B + C + (A + B + C | group)  
+  set.seed(seed)
+  
+  data_size <- n_cluster*ave_cluster_n
+  
+  cor2cov <- function (sds, R) outer(sds, sds) * R
+  
+  G <- cor2cov(G.sds, diag(1-G.r, length(G.sds))+G.r)
+  
+  b <- MASS::mvrnorm(n_cluster, mu = rep(0, nrow(G)), 
+                     Sigma = G, empirical = empirical)                   
+  
+  DF <- data.frame(group = group <- rep(1:n_cluster, each = ave_cluster_n), 
+                   A = rnorm(data_size, 10),
+                   B = rnorm(data_size, 10),
+                   C = rnorm(data_size, 10))
+  
+  # fixed-effect design matrix
+  X <- model.matrix(~ A+B+C, data = DF)
+  
+  # Random-effects design matrix
+  Z <- model.matrix(~ A+B+C, data = DF)
+  
+  # mu: linear predictors (fixed + random):
+  mu <- as.vector(X %*% betas + rowSums(Z * b[group,]))
+  
+  # outcome math:
+  DF$y <- rnorm(data_size, mu, e)
+  
+  return(round(DF, 2))
+}  
+                 
 #=================================================================================================================================  
   
 need <- c("lme4", "nlme", "glmmTMB", "emmeans", "plotrix", "ellipse", 'jtools', 'stargazer', 'interactions', 'car', 'MASS', 'modelr', 
