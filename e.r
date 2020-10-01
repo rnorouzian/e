@@ -633,7 +633,7 @@ t.testb <- function(m1, m2, s1, s2, n1, n2 = NA, m0 = 0, var.equal = FALSE, sdif
 
 #=================================================================================================================================
        
-G_matrix <- function(fit){
+G_matrix2 <- function(fit){
   vc <- VarCorr(fit)
   if(length(vc)==1)
   {
@@ -646,7 +646,22 @@ G_matrix <- function(fit){
     dimnames(y)[[2]] <- rownames(z)
   }
   return(y)
+}  
+       
+#=================================================================================================================================  
+       
+       
+G_matrix <- function(fit){
+   
+  vc <- VarCorr(fit)
+  out <- as.matrix(Matrix::bdiag(vc))
+  if(is.null(unlist(dimnames(out)))) {
+    nm <- unlist(lapply(vc, function(x) attributes(x)$dimnames[1]))
+    dimnames(out) <- list(nm, nm)
+  }
+  out
 }       
+       
    
 #=================================================================================================================================  
     
