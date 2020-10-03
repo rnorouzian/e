@@ -491,7 +491,7 @@ my.penalty <- function(dayslate = 0, dayslate.span = 30){
 
 #=================================================================================================================================
        
-sim.piece <- function(nPart = 100, G.r = .3, G.sds = c(2, 1, 2), e = .1,
+sim_piece <- function(nPart = 100, G.r = .3, G.sds = c(2, 1, 2), e = .1,
                       betas = 2*c(10, 0, 0, 0, 3, .3, .6, .5, 2.7, .2, .3, 0, .7, 1),
                       type = c("normal", "logistic", "poisson"), seed = NULL){
   
