@@ -652,7 +652,9 @@ G_matrix2 <- function(fit){
        
        
 G_matrix <- function(fit, digits = 8){
-   
+
+if(inherits(fit, c("lmerMod", "lmerModLmerTest", "lme4"))){
+  
   vc <- VarCorr(fit)
   out <- as.matrix(Matrix::bdiag(vc))
   if(is.null(unlist(dimnames(out)))) {
@@ -660,6 +662,9 @@ G_matrix <- function(fit, digits = 8){
     dimnames(out) <- list(nm, nm)
   }
   round(out, digits)
+  
+} else if(inherits(fit, "lme")) { round(getVarCov(fit), digits) }
+
 }       
        
    
