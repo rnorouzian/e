@@ -651,7 +651,7 @@ G_matrix2 <- function(fit){
 #=================================================================================================================================  
        
        
-G_matrix <- function(fit){
+G_matrix <- function(fit, digits = 8){
    
   vc <- VarCorr(fit)
   out <- as.matrix(Matrix::bdiag(vc))
@@ -659,7 +659,7 @@ G_matrix <- function(fit){
     nm <- unlist(lapply(vc, function(x) attributes(x)$dimnames[1]))
     dimnames(out) <- list(nm, nm)
   }
-  out
+  round(out, digits)
 }       
        
    
