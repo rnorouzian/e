@@ -990,14 +990,18 @@ return(fit)
 
 G_pca <- function(fit) {
   
-  vc <- VarCorr(fit)
-  pca_vc <- summary(rePCA(fit))
-  
-  Map(function(x, z) {
-    colnames(x$importance) <- paste(z, unique(sapply(vc, colnames)), sep = '_')
+  obj <- summary(rePCA(fit))
+  model <- VarCorr(fit)
+  if(length(obj) == length(model)) {
+   obj <- Map(function(x, z) {
+    colnames(x$importance) <- paste(z, unique(sapply(model, colnames)), sep = '_')
     x
-  }, pca_vc, names(pca_vc))
-  
+  }, obj, names(obj))
+  }
+  else if(length(obj) == 1) {
+    colnames(obj[[1]]$importance) <- unlist(mapply(paste, names(model), sapply(model, colnames), MoreArgs = list(sep = '_')))
+  }
+  return(obj)
 }
 
      
