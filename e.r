@@ -1073,7 +1073,7 @@ sim_sng <- function(n_cluster = 10, ave_cluster_n = 15, G.r = 0, G.sds = c(2, 1,
                  
 #=================================================================================================================================  
   
-need <- c("lme4", "nlme", "glmmTMB", "emmeans", "plotrix", "ellipse", 'jtools', 'stargazer', 'interactions', 'car', 'MASS', 'modelr', 
+need <- c("lme4", "nlme", "glmmTMB", "emmeans", "plotrix", "ellipse", 'jtools', 'stargazer', 'interactions', 'car', 'MASS', 'modelr', 'fastDummies',
           'bbmle', 'performance', 'see', 'psych','haven', 'effects','tidyverse','parallel','optimx','minqa','blme','dfoptim', 'remotes', 'DHARMa')
      
 not.have <- need[!(need %in% installed.packages()[,"Package"])]
