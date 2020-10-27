@@ -1073,7 +1073,7 @@ sim_sng <- function(n_cluster = 10, ave_cluster_n = 15, G.r = 0, G.sds = c(2, 1,
 
 #=================================================================================================================================
                               
-R2_null <- function(m0, ...){
+R2_null <- function(m0, ..., digits = 4){
 
 foo <- function(m0, m1){
   
@@ -1089,7 +1089,7 @@ foo <- function(m0, m1){
 temp <- lapply(list(...) , foo, m0 = m0)
 temp2 <- cbind(lapply(temp, '[', 4))
 
-result <- round(do.call(cbind, temp2), 2)
+result <- round(do.call(cbind, temp2), digits)
 names(result) <-  substitute(...())
 rownames(result) <- c("Level-2:", "Level-1:")
 result
