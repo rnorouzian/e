@@ -1070,7 +1070,31 @@ sim_sng <- function(n_cluster = 10, ave_cluster_n = 15, G.r = 0, G.sds = c(2, 1,
   
   return(round(DF, 2))
 }  
-                 
+
+#=================================================================================================================================
+                              
+R2_null <- function(m0, ...){
+
+foo <- function(m0, m1){
+  
+  VarCorr(m0) %>% 
+    as.data.frame %>% 
+    select(grp, var_m0 = vcov) %>% 
+    left_join(VarCorr(m1) %>% 
+                as.data.frame %>% 
+                select(grp, var_m1 = vcov), by = "grp") %>% 
+    mutate(var_red = 1 - var_m1 / var_m0) 
+}
+
+temp <- lapply(list(...) , foo, m0 = m0)
+temp2 <- cbind(lapply(temp, '[', 4))
+
+result <- round(do.call(cbind, temp2), 2)
+names(result) <-  substitute(...())
+rownames(result) <- c("Level-2:", "Level-1:")
+result
+}                              
+                              
 #=================================================================================================================================  
   
 need <- c("lme4", "nlme", "glmmTMB", "emmeans", "plotrix", "ellipse", 'jtools', 'stargazer', 'interactions', 'car', 'MASS', 'modelr', 'fastDummies',
