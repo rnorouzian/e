@@ -1094,6 +1094,49 @@ names(result) <-  substitute(...())
 rownames(result) <- c("Level-2:", "Level-1:")
 result
 }                              
+
+#=================================================================================================================================  
+     
+                              
+do_context <- function(data, context_vars, group_id){
+
+all_names <- names(data)
+
+ok <- context_vars %in% all_names
+  
+if(!all(ok)) message(paste(toString(dQuote(context_vars[!ok])), "not found in the 'data' thus ignored."))
+
+context_vars <- context_vars[ok] 
+
+dum_vars <- all_names[sapply(data, function(i)is.character(i)|is.factor(i))]
+ 
+dum_names <- context_vars[context_vars %in% dum_vars]
+
+is_dum <- length(dum_names) > 0
+
+num_names <- context_vars[!(context_vars %in% dum_vars)]
+
+is_num <- length(num_names) > 0
+
+
+if(is_num){
+data <- data %>%
+  group_by(across(all_of(group_id))) %>%                          
+  mutate(across(all_of(num_names), list(wthn = ~ . - mean(.), btw = ~ mean(.)))) %>% 
+  as.data.frame()
+}
+
+
+if(is_dum){
+data <- data %>%
+  dummy_cols(select_columns = dum_names) %>% 
+  group_by(across(all_of(group_id))) %>%                          
+  mutate(across(starts_with(paste0(dum_names, "_")), list(wthn = ~ . - mean(.), btw = ~ mean(.)))) %>% 
+  as.data.frame()
+}
+
+return(data)
+}
                               
 #=================================================================================================================================  
   
