@@ -365,16 +365,19 @@ n_par <- function(...){
   
   f <- function(fit){
     total <- attr(logLik(fit), "df")
-    fixed <- if(inherits(fit, "lme")) length(fixed.effects(fit)) else length(fixef(fit))
-    random <- if(inherits(fit, "lme")) ncol(random.effects(fit)) else length(getME(fit,"theta"))
+    fixed <- length(fixef(fit))
+    random <- ncol(ranef(fit))
     error <- if(inherits(fit, "lme") || isLMM(fit)) 1 else 0
-    return(c(total = total, fixed = fixed, random = random, error = error))
+    variance <- if(inherits(fit, "lme")) length(coef(fit$modelStruct$varStruct, unconstrained=FALSE)) else 0
+    res.cov <- if(inherits(fit, "lme")) length(coef(fit$modelStruct$corStruct, unconstrained=FALSE)) else 0
+    return(c(total = total, fixed = fixed, random = random, error = error, variance = variance,
+             res.cov = res.cov))
   }
   
   m <- as.data.frame(purrr::map_dfr(.x = list(...), .f = f))
   rownames(m) <- substitute(...())
   m
-}                                    
+}                                         
  
 #=================================================================================================================================
 
