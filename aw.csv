@@ -1,0 +1,9 @@
+Patient,Length of stay (Hours) - Ativan,Length of stay (Hours) - Phenobarbital,Direct cost - Ativan,Direct cost - Phenobarbital,ICU days - Ativan,ICU days - Phenobarbital
+A,144,48,7420,2273,0,0
+B,168,144,8866,7434,0,0
+C,168,72,9036,3435,1,0
+D,168,72,11256,6870,2,0
+E,144,96,9174,5222,1,0
+F,192,48,13178,2737,1,0
+G,288,120,20173,7351,6,0
+H,288,96,16123,4100,0,0
