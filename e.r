@@ -1149,7 +1149,18 @@ do_context <- function(data, context_vars, group_id){
   
   return(data)
 }
-                              
+
+#=================================================================================================================================  
+                               
+                               
+hetro_var <- function(fit){
+  
+  if(!inherits(fit, "lme")) stop("Only 'lme()' models are accepted.", call. = FALSE)
+  
+  coef(fit$modelStruct$varStruct, uncons = FALSE, allCoef = TRUE)
+  
+}
+                               
 #=================================================================================================================================  
   
 need <- c("lme4", "nlme", "glmmTMB", "emmeans", "plotrix", "ellipse", 'jtools', 'stargazer', 'interactions', 'car', 'MASS', 'modelr', 'fastDummies',
