@@ -718,7 +718,7 @@ converge2 <- function(fit){
         print(paste0("One of the optimx options, ", optimx_options[i],", worked!"))
         
         if(isSingular(model_flex, tol = 1e-3)) message("The model has converged but is singular.")
-        print(summary(model_flex))
+        print(model_flex)
         break
       } else { print(paste0("No optimx options worked:("))}
     }
@@ -746,7 +746,7 @@ converge3 <- function(fit){
                                                                                             ftol_abs = 1e-9)))
     if(is.null(model_flex@optinfo$conv$lme4$messages)){
       print(paste0("One of the nloptwrap options, ", algoptions[i],", worked!"))
-      print(summary(model_flex))
+      print(model_flex)
       break
     } else { print(paste0("No nloptwrap options worked:("))}
   }
@@ -779,7 +779,7 @@ pars_x <- runif(length(pars), mins, maxs)
   restart2 <- update(fit, start=pars_x,
                      control=strict_tol)
   
-  list(restart = summary(restart), restart2 = summary(restart2))
+  list(restart = restart, restart2 = restart2)
   
   } else if(isSingular(fit)){ message("The model has converged but is singular.") 
   } else { message("No issues found with the model.")}                                 
