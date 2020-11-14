@@ -771,7 +771,10 @@ par_restart <- function(fit){
   
   restart <- update(fit, start = pars)
   
-  pars_x <- runif(length(pars),pars/1.01,pars*1.01)
+mins <- pmin(pars/1.01, pars*1.01)
+maxs <- pmax(pars/1.01, pars*1.01)
+
+pars_x <- runif(length(pars), mins, maxs) 
   
   restart2 <- update(fit, start=pars_x,
                      control=strict_tol)
