@@ -787,8 +787,8 @@ par_restart <- function(fit){
     
     restart2 <- if(!is.null(restart2@optinfo$conv$lme4$messages)) NULL else restart2
     
-    if(is.null(restart1)) message("Note: 'restart1' didn't work!") 
-    if(is.null(restart2)) message("Note: 'restart2' didn't work!")
+    if(is.null(restart1)) message("Note: 'restart1' didn't work (hence NULL)!") 
+    if(is.null(restart2)) message("Note: 'restart2' didn't work (hence NULL)!")
     
     list(restart1 = restart1, restart2 = restart2)
     
