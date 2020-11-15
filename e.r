@@ -716,13 +716,13 @@ converge2 <- function(fit){
                            control = lmerControl(optimizer = "optimx", optCtrl = list(method = optimx_options[i]))))
       
       if(is.null(model_flex@optinfo$conv$lme4$messages)){
-        print(paste0("The optimx option ", optimx_options[i]," worked!"))
+        print(paste0("The optimx option '", optimx_options[i],"' worked!"))
         return(model_flex)
         
         if(isSingular(model_flex, tol = 1e-3)) message("The model has converged but is singular.")
         
         break
-      } else { print(paste0("The optimx option ", optimx_options[i]," didn't work"))}
+      } else { print(paste0("The optimx option '", optimx_options[i],"' didn't work"))}
     }
   }
   
@@ -749,10 +749,10 @@ converge3 <- function(fit){
                                                                                               xtol_abs = 1e-9,
                                                                                               ftol_abs = 1e-9))))
       if(is.null(model_flex@optinfo$conv$lme4$messages)){
-        print(paste0("The nloptwrap options ", algoptions[i]," worked!"))
+        print(paste0("The nloptwrap options '", algoptions[i],"' worked!"))
         return(model_flex)
         break
-      } else { print(paste0("The 'nloptwrap' options ", algoptions[i]," didn't work!"))}
+      } else { print(paste0("The 'nloptwrap' options '", algoptions[i],"' didn't work!"))}
     }
     
   } else if(isSingular(fit)){ message("The model has converged but is singular.") 
