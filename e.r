@@ -1177,11 +1177,21 @@ hetro_var <- function(fit){
        
 #=================================================================================================================================
                                
-quad <- function(x, a, b, c, degree = 2) a + b*x + c*x^degree                               
+quad <- function(x, a, b, c, degree = 2) a + b*x + c*x^degree   
+                               
+#=================================================================================================================================                               
+                               
+get_forms <- function(dredge_fit, n = 1:5){ 
+  
+  zz <- get.models(dredge_fit, n)
+  
+  data.frame(model = as.character(lapply(seq_along(zz), 
+                                         function(i)get_formula(zz[[i]]))))
+  }                               
                                
 #=================================================================================================================================  
   
-need <- c("lme4", "nlme", "glmmTMB", "emmeans", "plotrix", "ellipse", 'jtools', 'stargazer', 'interactions', 'car', 'MASS', 'modelr', 'fastDummies',
+need <- c("lme4", "nlme", "glmmTMB", "emmeans", "plotrix", "ellipse", 'jtools', 'stargazer', 'interactions', 'car', 'MASS', 'modelr', 'fastDummies', 'MuMIn',
           'bbmle', 'performance', 'see', 'psych','haven', 'effects','tidyverse','parallel','optimx','minqa','blme','dfoptim', 'remotes', 'DHARMa', 'multcomp')
      
 not.have <- need[!(need %in% installed.packages()[,"Package"])]
