@@ -1185,6 +1185,41 @@ rho_lme <- function(fit) {
   coef(fit$modelStruct$corStruct, uncons = FALSE, allCoef = TRUE)
 
 }                               
+ 
+                               
+#=================================================================================================================================
+                               
+cov_str <- function(fit, cov = TRUE, time_var = "time"){
+  
+  rho <- rho_lme(fit)
+  hetro <- hetro_var(fit)
+  sig <- sigma(fit)
+  
+  if(is.null(rho) & is.null(hetro)) return(id_cor(fit, time_var = time_var))
+  if(is.null(rho) & !is.null(hetro)) return((sig*hetro)^2)  
+  corm <- corMatrix(fit$modelStruct$corStruct)[[1]]
+  dat <- getData(fit)
+  if(!(time_var %in% names(dat))) stop("Your 'time_var =' doesn't exist in your data.", call. = FALSE)
+  time_vals <- unique(dat[[time_var]])
+  res <- corm*sig^2*if(is.null(hetro)) 1 else t(t(hetro))%*%t(hetro)
+  if(!cov) res <- cov2cor(res)
+  rownames(res) <- colnames(res) <- paste0(time_var,time_vals)
+  return(res)
+  
+  }                               
+                               
+#=================================================================================================================================  
+                               
+id_cor <- function(fit, time_var = "time"){
+  
+  sig <- sigma(fit)^2
+  time_vals <- unique(getData(fit)[[time_var]])
+  steps <- length(time_vals)
+  x <- diag(steps)
+  res <- data.frame(sig*x)
+  rownames(res) <- colnames(res) <- paste0(time_var,time_vals)
+  return(res)
+} 
                                
 #=================================================================================================================================
                                
