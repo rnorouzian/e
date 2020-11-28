@@ -1169,12 +1169,23 @@ do_context <- function(data, context_vars, group_id){
                                
 hetro_var <- function(fit){
   
-  if(!inherits(fit, "lme")) stop("Only 'lme()' models are accepted.", call. = FALSE)
+    if(!inherits(fit, c("lme", "gls"))) stop("Only 'lme()' & 'gls()' models are accepted.", call. = FALSE)
   
   coef(fit$modelStruct$varStruct, uncons = FALSE, allCoef = TRUE)
   
 }
-       
+     
+#=================================================================================================================================
+
+                               
+rho_lme <- function(fit) {
+  
+  if(!inherits(fit, c("lme", "gls"))) stop("Only 'lme()' & 'gls()' models are accepted.", call. = FALSE)
+  
+  coef(fit$modelStruct$corStruct, uncons = FALSE, allCoef = TRUE)
+
+}                               
+                               
 #=================================================================================================================================
                                
 quad <- function(x, a, b, c, degree = 2) a + b*x + c*x^degree   
