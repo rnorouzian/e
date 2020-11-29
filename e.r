@@ -1189,19 +1189,28 @@ rho_lme <- function(fit) {
                                
 #=================================================================================================================================
                                
-cov_str <- function(fit, cov = TRUE, time_var = "time"){
+cov_str <- function(fit, cov = TRUE, time_var = "time", hlm = TRUE){
   
   rho <- rho_lme(fit)
   hetro <- hetro_var(fit)
   sig <- sigma(fit)
-  
-  if(is.null(rho) & is.null(hetro)) return(id_cor(fit, time_var = time_var))
-  if(is.null(rho) & !is.null(hetro)) return((sig*hetro)^2)  
-  corm <- corMatrix(fit$modelStruct$corStruct)[[1]]
   dat <- getData(fit)
-  if(!(time_var %in% names(dat))) stop("Your 'time_var =' doesn't exist in your data.", call. = FALSE)
+  if(!(time_var %in% names(dat))) stop("Your 'time_var' doesn't exist in your data.", call. = FALSE)
   time_vals <- unique(dat[[time_var]])
-  res <- corm*sig^2*if(is.null(hetro)) 1 else t(t(hetro))%*%t(hetro)
+  
+  if(is.null(rho) & is.null(hetro)) return(id_cor(fit, cov = cov, time_var = time_var, hlm = hlm))
+  if(is.null(rho) & !is.null(hetro)) {
+    
+    res <- id_cor(fit, cov = cov, time_var = time_var, hlm = hlm)
+    diag(res) <- sum_ranef_var(fit)+(sig*hetro)^2
+    return(res)  
+    
+  }
+  corm <- corMatrix(fit$modelStruct$corStruct)[[1]]
+  
+  res <- corm*sig^2+if(hlm)sum_ranef_var(fit) else 0 *if(is.null(hetro)) 1 else t(t(hetro))%*%t(hetro)
+  if(!is.null(hetro)) diag(res) <- sum_ranef_var(fit)+(sigma(fit)*hetro_var(fit))^2
+    
   if(!cov) res <- cov2cor(res)
   rownames(res) <- colnames(res) <- paste0(time_var,time_vals)
   return(res)
@@ -1210,18 +1219,31 @@ cov_str <- function(fit, cov = TRUE, time_var = "time"){
                                
 #=================================================================================================================================  
                                
-id_cor <- function(fit, time_var = "time"){
+id_cor <- function(fit, cov = TRUE, time_var = "time", hlm = TRUE){
   
   sig <- sigma(fit)^2
+  vrs <- as.numeric(VarCorr(fit)[,"Variance"])
   time_vals <- unique(getData(fit)[[time_var]])
   steps <- length(time_vals)
   x <- diag(steps)
-  res <- data.frame(sig*x)
+  res <- sig*x
+  
+  diag(res) <- sum_ranef_var(fit, resid = TRUE) 
+  res[col(res)!=row(res)] <- if(hlm) sum_ranef_var(fit) else 0
+  
   rownames(res) <- colnames(res) <- paste0(time_var,time_vals)
+  if(!cov) res <- cov2cor(res)
   return(res)
 } 
                                
 #=================================================================================================================================
+           
+sum_ranef_var <- function(fit, resid = FALSE){
+vrs <- as.numeric(VarCorr(fit)[,"Variance"])
+sum(if(resid) vrs else rev(vrs)[-1], na.rm = TRUE)
+}                               
+                               
+#=================================================================================================================================                               
                                
 quad <- function(x, a, b, c, degree = 2) a + b*x + c*x^degree   
                                
