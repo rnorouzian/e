@@ -1010,10 +1010,10 @@ G_pca <- function(fit) {
   obj <- summary(rePCA(fit))
   model <- VarCorr(fit)
   if(length(obj) == length(model)) {
-   obj <- Map(function(x, z) {
-    colnames(x$importance) <- paste(z, unique(sapply(model, colnames)), sep = '_')
-    x
-  }, obj, names(obj))
+    obj <- Map(function(x, z) {
+      colnames(x$importance) <- paste(z, unique(c(sapply(model, colnames))), sep = '_')
+      x
+    }, obj, names(obj))
   }
   else if(length(obj) == 1) {
     colnames(obj[[1]]$importance) <- unlist(mapply(paste, names(model), sapply(model, colnames), MoreArgs = list(sep = '_')))
