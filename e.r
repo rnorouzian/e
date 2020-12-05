@@ -1007,11 +1007,11 @@ return(fit)
 
 G_pca <- function(fit) {
   
-  obj <- summary(rePCA(fit))
-  model <- VarCorr(fit)
+  obj <- summary(lme4::rePCA(fit))
+  model <- lme4::VarCorr(fit)
   if(length(obj) == length(model)) {
     obj <- Map(function(x, z) {
-      colnames(x$importance) <- paste(z, unique(c(sapply(model, colnames))), sep = '_')
+      colnames(x$importance) <- paste(z, colnames(model[[z]]), sep = '_')
       x
     }, obj, names(obj))
   }
