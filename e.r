@@ -1266,10 +1266,11 @@ not.have <- need[!(need %in% installed.packages()[,"Package"])]
 if(length(not.have)) install.packages(not.have)
 
 #options(warn = -1)
-       
+
+suppressWarnings(                                         
 suppressMessages({ 
   
 for(i in need){
   library(i, character.only = TRUE)
 }
-})                                
+}))                                
