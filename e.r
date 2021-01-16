@@ -655,19 +655,20 @@ G_matrix2 <- function(fit){
        
        
 G_matrix <- function(fit, digits = 8){
-
-if(inherits(fit, c("lmerMod", "lmerModLmerTest", "lme4"))){
   
   vc <- VarCorr(fit)
-  out <- as.matrix(Matrix::bdiag(vc))
-  if(is.null(unlist(dimnames(out)))) {
-    nm <- unlist(lapply(vc, function(x) attributes(x)$dimnames[1]))
-    dimnames(out) <- list(nm, nm)
-  }
-  round(out, digits)
   
-} else if(inherits(fit, "lme")) { round(getVarCov(fit), digits) }
-
+  if(inherits(fit, c("lmerMod", "lmerModLmerTest", "lme4"))){
+    
+    out <- as.matrix(Matrix::bdiag(vc))
+    if(is.null(unlist(dimnames(out)))) {
+      nm <- unlist(lapply(vc, function(x) attributes(x)$dimnames[1]))
+      dimnames(out) <- list(nm, nm)
+    }
+    round(out, digits)
+    
+  } else if(inherits(fit, "lme") & length(fit$group) < 2) { round(getVarCov(fit), digits) } else { vc }
+  
 }       
        
    
