@@ -384,7 +384,7 @@ n_par <- function(...){
 # Some hack to turn off unnneeded tick mark on the 3rd and 4th axes of plot effects
                                     
 plot.efflist <- function (x, selection, rows, cols, graphics = TRUE, 
-                          lattice, ...) 
+                          lattice, rug = FALSE, multiline = TRUE, ...) 
 {
   lattice <- if (missing(lattice)) 
     list()
@@ -392,7 +392,10 @@ plot.efflist <- function (x, selection, rows, cols, graphics = TRUE,
   if (!missing(selection)) {
     if (is.character(selection)) 
       selection <- gsub(" ", "", selection)
-    return(plot(x[[selection]], lattice = lattice, ...))
+    pp <- plot(x[[selection]], lattice = lattice, rug = rug, multiline=multiline, ...)
+    pp$x.scales$tck=c(1,0)
+    pp$y.scales$tck=c(1,0)
+    return(pp)
   }
   effects <- gsub(":", "*", names(x))
   neffects <- length(x)
@@ -408,7 +411,7 @@ plot.efflist <- function (x, selection, rows, cols, graphics = TRUE,
       more <- !((i - 1) * cols + j == neffects)
       lattice[["array"]] <- list(row = i, col = j, 
                                  nrow = rows, ncol = cols, more = more)
-      pp <- plot(x[[(i - 1) * cols + j]], lattice = lattice, 
+      pp <- plot(x[[(i - 1) * cols + j]], lattice = lattice, rug = rug, multiline = multiline,
                  ...)
       # hack to turn off opposite side tick marks
       pp$x.scales$tck=c(1,0)
