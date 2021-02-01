@@ -211,12 +211,12 @@ post.mixed <- function(fit, formula = NULL, plot = TRUE, by = NULL, var = NULL, 
 
 #=================================================================================================================================
                                                                        
-lo_ave_up <- function(data = NULL, vars, vals = NULL){
+lo_ave_up <- function(data = NULL, vars, vals = NULL, digits = 9){
   
   if(is.null(vals)){
     sapply(vars, function(x) 
       round(setNames(mean(data[[x]]) + c(-1, 0, 1)*sd(data[[x]]), 
-               paste0(x, c('-1SD', '.Mean', '+1SD'))), 9), simplify = FALSE) 
+               paste0(x, c('-1SD', '.Mean', '+1SD'))), digits), simplify = FALSE) 
   } else {
     
     setNames(lapply(vars, function(i) vals), vars)
