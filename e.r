@@ -1261,7 +1261,16 @@ get_forms <- function(dredge_fit, n = 1:5){
   data.frame(model = as.character(lapply(seq_along(zz), 
                                          function(i)get_formula(zz[[i]]))))
   }                               
-                               
+
+#=================================================================================================================================
+                                         
+what_estimate <- function(formula, data){
+  
+mm <- model.matrix(as.formula(formula), data = data)
+
+noquote(colnames(mm))
+}                                                                                  
+                                         
 #=================================================================================================================================  
   
 need <- c("lme4", "nlme", "glmmTMB", "emmeans", "plotrix", "ellipse", 'jtools', 'stargazer', 'interactions', 'car', 'MASS', 'modelr', 'fastDummies', 'MuMIn', 'sjPlot', 'lmerTest', 'reghelper',
