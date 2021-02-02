@@ -1320,7 +1320,17 @@ form_length <- function(...){
          function(x) nchar(as.character(x)[[3]]))
   
 }                    
-                                         
+
+
+#=================================================================================================================================  
+         
+lmeCtlList <- function(maxIter = 200, msMaxIter = 200, niterEM = 50,
+                       msMaxEval = 400)
+  {
+  nlme::lmeControl(maxIter = maxIter, msMaxIter = msMaxIter, niterEM = niterEM,
+                         msMaxEval = msMaxEval)
+}
+         
 #=================================================================================================================================  
 
 # 'sjPlot'         
