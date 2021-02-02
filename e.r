@@ -800,6 +800,46 @@ par_restart <- function(fit){
   } else { message("No issues found with the model.")}                                 
   
 }
+                                  
+                                  
+#=================================================================================================================================                                                                   
+                                  
+par_restart2 <- function(fit){
+  
+  if(has_warning(fit)){
+    strict_tol <- lmerControl(check.nobs.vs.nRE= "ignore", optCtrl=list(xtol_abs =1e-8, ftol_abs=1e-8))  
+    
+    if (isLMM(fit)) {
+      pars <- getME(fit,"theta")
+    } else {
+      pars <- getME(fit, c("theta","fixef"))
+    }
+    
+    restart <- suppressWarnings(update(fit, control = lmerControl(check.nobs.vs.nRE= "ignore"), start = pars))
+    
+    restart1 <- if(!is.null(restart@optinfo$conv$lme4$messages)) NULL else restart
+    
+    mins <- pmin(pars/1.01, pars*1.01)
+    maxs <- pmax(pars/1.01, pars*1.01)
+    
+    pars_x <- runif(length(pars), mins, maxs) 
+    
+    restart2 <- suppressWarnings(update(fit, start=pars_x,
+                                        control=strict_tol))
+    
+    restart2 <- if(!is.null(restart2@optinfo$conv$lme4$messages)) NULL else restart2
+    
+    if(is.null(restart1)) message("Note: 'restart1' didn't work (hence NULL)!") 
+    if(is.null(restart2)) message("Note: 'restart2' didn't work (hence NULL)!")
+    
+
+    list(pars1 = pars, restart1 = restart1, pars2 = pars_x, restart2 = restart2)
+    
+  } else if(isSingular(fit)){ message("The model has converged but is singular.") 
+  } else { message("No issues found with the model.")}                                 
+  
+}
+                                  
 #=================================================================================================================================
 
 
