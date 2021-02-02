@@ -680,7 +680,7 @@ G_matrix <- function(fit, digits = 8){
 has_warning <- function(m) {
   df <- summary(m)
   !is.null(df$optinfo$conv$lme4$messages) && 
-    grepl('failed to converge', df$optinfo$conv$lme4$messages)
+   any(grepl('failed to converge', df$optinfo$conv$lme4$messages, ignore.case = TRUE))
 }
 
 #===============================================================================================================================
@@ -717,7 +717,7 @@ converge2 <- function(fit){
     
     for(i in 1:length(optimx_options)){
       model_flex <- suppressWarnings(update(fit,  
-                           control = lmerControl(optimizer = "optimx", optCtrl = list(method = optimx_options[i]))))
+                           control = lmerControl(optimizer = "optimx", check.nobs.vs.nRE= "ignore", optCtrl = list(method = optimx_options[i]))))
       
       if(is.null(model_flex@optinfo$conv$lme4$messages)){
         print(paste0("The optimx option '", optimx_options[i],"' worked!"))
@@ -746,7 +746,7 @@ converge3 <- function(fit){
     
     for(i in 1:length(algoptions)){
       
-      model_flex <- suppressWarnings(update(fit, control = lmerControl(optimizer = "nloptwrap", optCtrl = list(method = algoptions[i],
+      model_flex <- suppressWarnings(update(fit, control = lmerControl(optimizer = "nloptwrap", check.nobs.vs.nRE= "ignore", optCtrl = list(method = algoptions[i],
                                                                                               maxit = 1e9,
                                                                                               maxeval = 1e9,
                                                                                               maxfun = 1e9,
@@ -769,7 +769,7 @@ converge3 <- function(fit){
 par_restart <- function(fit){
   
   if(has_warning(fit)){
-    strict_tol <- lmerControl(optCtrl=list(xtol_abs =1e-8, ftol_abs=1e-8))  
+    strict_tol <- lmerControl(check.nobs.vs.nRE= "ignore", optCtrl=list(xtol_abs =1e-8, ftol_abs=1e-8))  
     
     if (isLMM(fit)) {
       pars <- getME(fit,"theta")
@@ -777,7 +777,7 @@ par_restart <- function(fit){
       pars <- getME(fit, c("theta","fixef"))
     }
     
-    restart <- suppressWarnings(update(fit, start = pars))
+    restart <- suppressWarnings(update(fit, control = lmerControl(check.nobs.vs.nRE= "ignore"), start = pars))
     
     restart1 <- if(!is.null(restart@optinfo$conv$lme4$messages)) NULL else restart
     
@@ -824,7 +824,7 @@ par_compare <- function(fit){
                                 
 par_hess_grad <- function(fit){
 
-devfun <- update(fit, devFunOnly = TRUE)
+devfun <- update(fit, control = lmerControl(check.nobs.vs.nRE= "ignore"), devFunOnly = TRUE)
 
 if (isLMM(fit)) {
   pars <- getME(fit,"theta")
