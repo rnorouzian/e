@@ -1282,8 +1282,10 @@ form_length <- function(...){
 }                    
                                          
 #=================================================================================================================================  
-  
-need <- c("lme4", "nlme", "glmmTMB", "emmeans", "plotrix", "ellipse", 'jtools', 'stargazer', 'interactions', 'car', 'MASS', 'modelr', 'fastDummies', 'MuMIn', 'sjPlot', 'lmerTest', 'reghelper',
+
+# 'sjPlot'         
+         
+need <- c("lme4", "nlme", "glmmTMB", "emmeans", "plotrix", "ellipse", 'jtools', 'stargazer', 'interactions', 'car', 'MASS', 'modelr', 'fastDummies', 'MuMIn', 'lmerTest', 'reghelper',
           'bbmle', 'performance', 'see', 'psych','haven', 'effects','tidyverse','parallel','optimx','minqa','blme','dfoptim', 'remotes', 'DHARMa', 'multcomp', 'splines','effectsize')
      
 not.have <- need[!(need %in% installed.packages()[,"Package"])]
