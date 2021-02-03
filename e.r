@@ -1350,3 +1350,9 @@ for(i in need){
   library(i, character.only = TRUE)
 }
 }))                                
+
+formals(lmerControl)$check.nobs.vs.nRE <- "ignore"       
+formals(glmerControl)$check.nobs.vs.nRE <- "ignore"
+formals(glmerControl)$check.nobs.vs.nlev <- "ignore"
+formals(lmerControl)$check.nobs.vs.nlev <- "ignore"         
+         
