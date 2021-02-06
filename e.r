@@ -1240,7 +1240,7 @@ cov_str <- function(fit, cov = TRUE, time_var = "time", hlm = TRUE){
   hetro <- hetro_var(fit)
   sig <- sigma(fit)
   dat <- getData(fit)
-  if(!(time_var %in% names(dat))) stop("Your 'time_var' doesn't exist in your data.", call. = FALSE)
+  if(!(time_var %in% names(dat))) stop("'time_var' doesn't exist in the data.", call. = FALSE)
   time_vals <- unique(dat[[time_var]])
   
   if(is.null(rho) & is.null(hetro)) return(id_cor(fit, cov = cov, time_var = time_var, hlm = hlm))
@@ -1334,7 +1334,73 @@ center_plot <- function(e = 2, beta_x = -.3, sd_x = 2.5,
     
 }    
    
-# center_plot(e=4, beta = 2, sd_x = 4, sd_y = 18)    
+# center_plot(e=4, beta = 2, sd_x = 4, sd_y = 18) 
+
+#=================================================================================================================================
+    
+rand_inter <- function(pop_mean = 1629, pop_mean_sd = 20, 
+                       n_groups = 20, group_size = 10, seed = 123,
+                       within_sd = 30, show.hlm.eq = FALSE){
+
+set.seed(seed)
+#pop_mean  # Grand Mean of STAAR math for schools (Level 2 Mean)
+#n_groups  # Number of schoolsORgroups
+groups <- gl(n_groups, group_size)  # School indicatorORid = 1:4, each 50 times (for 50 students in each)
+Z <- model.matrix(~groups-1) # make Design matrix and dummy codes for each SchoolsORgroups
+group_means <- rnorm(n_groups, 0, pop_mean_sd) # The actual mean differences BETWEEN schoolsORgroups (SD BETWEEN)
+
+y <- pop_mean + Z%*%group_means + rnorm(length(groups), 0, within_sd) # rnorm is differences within students inside each school (SD WITHIN)
+
+M_Y <- mean(y)
+
+d <- data.frame(y, groups)
+
+# Level 2: Mu_i ~ N(pop_mean, pop_mean_sd)
+# Level 1: math_{ij} ~ N(Mu_i, within_sd)
+
+observed.gr.means <- tapply(d$y, d$groups, mean)
+
+#complete_pooling <-lm(y~1, data = d)
+
+no_pooling <- lm(y~groups-1, data = d) #For demonstration remove intercept to see exact group means
+
+predict_no_pooling <- data_grid(d, groups) %>% add_predictions(no_pooling)
+
+partial_pooling <- lmer(y~1 + (1|groups), data = d)
+
+predict_p_pooling <- data_grid(d, groups) %>% add_predictions(partial_pooling)
+
+
+graphics.off()
+org.par <- par(no.readonly = TRUE)
+on.exit(par(org.par))
+
+
+  par(mgp = c(1.5, 0.5, 0), mar = c(2.5, 2.5, 2, 1) + 1, 
+      tck = -0.02)
+
+plot(observed.gr.means, pch = 19, xlab = "School/Group ID", ylab = "School/Group Means (STAAR MATH)", xaxt = "n", mgp = c(2, 0.3, 0))
+axis(1, at = 1:n_groups, cex.axis = .8, mgp = c(1.8, 0.3, 0))
+abline(v = 1:n_groups, col = adjustcolor(8, .1))
+
+abline(h = M_Y, lty = 2, col = 8)
+points(predict_p_pooling, col = adjustcolor(2, .6), pch = 19)
+
+legend(if(show.hlm.eq)"topleft" else "top", c("Fixed-effects ANOVA Means (no pooling)", "HLM Modeled Means (partial pooling)", "Overall Mean (complete pooling)"), 
+       col = c(1:2, 'gray40'), pch = c(19,19,NA), lty = c(NA, NA, 2), bty = "n", cex = .8, 
+       inset = c(0, -.17), xpd = NA)
+
+# Level 2: Mu_i ~ N(pop_mean, pop_mean_sd)
+# Level 1: math_ij ~ N(Mu_i, within_sd)
+
+if(show.hlm.eq) legend("topright", as.expression(c(bquote(mu[i]*" ~ "*italic(N)(.(pop_mean)*", "*.(pop_mean_sd))), 
+                                               bquote(Math[ij]*" ~ "*italic(N)(mu[i]*", "*.(within_sd))))),
+                            bty = "n", cex = .8, 
+                            inset = c(0, -.14), xpd = NA)
+
+}    
+    
+    
 #=================================================================================================================================    
 get_forms <- function(dredge_fit, n = 1:5){ 
   
