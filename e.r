@@ -1293,7 +1293,49 @@ sum(if(resid) vrs else rev(vrs)[-1], na.rm = TRUE)
 quad <- function(x, a, b, c, degree = 2) a + b*x + c*x^degree   
                                
 #=================================================================================================================================                               
-                               
+
+center_plot <- function(e = 2, beta_x = -.3, sd_x = 2.5, 
+                        level = .6, sd_y = 15,seed = NULL, 
+                        size = 3, gmc = TRUE, data = FALSE){
+  
+  set.seed(seed)  
+  pop_mean <- 80
+  n_groups <- 3
+  groups <- gl(n_groups, 5)
+  x <-rnorm(length(groups), 55, sd_x)
+  Z <-model.matrix(~groups-1)
+  group_means <- rnorm(n_groups, 0, sd_y)
+  y <- pop_mean + beta_x*x + Z%*%group_means + rnorm(length(groups), 0, e)
+  dat <- data.frame(y, groups, x)
+  
+  if(gmc)dat <- mutate(dat, x = x - mean(x))
+  
+  if(data) write_csv(dat, 'cw3.csv')
+  
+  dat2 <- dat %>% group_by(groups) %>% summarize(mean_x = mean(x),
+                                                 mean_y = mean(y),
+                                                 .groups = 'drop')
+  dat3 <- dat %>%
+    group_by(groups) %>%            
+    mutate(across(x, list(wthn = ~ . - mean(.))))
+  
+  dat %>% group_by(groups) %>% ggplot() +
+    aes(x, y, color = groups, shape = groups)+
+    geom_point(size = 2) + theme_classic() +
+    geom_smooth(method='lm', formula = "y~x", aes(group=1),se=F,color='magenta')+
+    stat_ellipse(level = level) +
+    geom_point(data = dat2, 
+               mapping = aes(x = mean_x, y = mean_y,color = factor(groups)),
+               size = 4, show.legend = F,color=1) +
+    geom_smooth(data = dat2, mapping = aes(x = mean_x, y = mean_y,group = 1), 
+                method = "lm", se=F, color = 1, formula = 'y ~ x', linetype = 1, size = .8)+
+    geom_smooth(data = dat3, mapping = aes(x = x_wthn, y = y, group=1), 
+                method = "lm", se=F, color = 4, formula = 'y ~ x', linetype = 2, size = .8)
+    
+}    
+   
+# center_plot(e=4, beta = 2, sd_x = 4, sd_y = 18)    
+#=================================================================================================================================    
 get_forms <- function(dredge_fit, n = 1:5){ 
   
   zz <- get.models(dredge_fit, n)
