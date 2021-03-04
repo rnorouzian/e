@@ -1459,6 +1459,8 @@ for(i in need){
 }
 }))                                
 
+options(dplyr.summarise.inform = FALSE)
+         
 formals(lmerControl)$check.nobs.vs.nRE <- "ignore"       
 formals(glmerControl)$check.nobs.vs.nRE <- "ignore"
 formals(glmerControl)$check.nobs.vs.nlev <- "ignore"
