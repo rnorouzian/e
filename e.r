@@ -1444,7 +1444,7 @@ lmectl <- function(maxIter = 200, msMaxIter = 200, niterEM = 50,
 # 'sjPlot'         
          
 need <- c("lme4", "nlme", "glmmTMB", "emmeans", "plotrix", "ellipse", 'jtools', 'stargazer', 'interactions', 'car', 'MASS', 'modelr', 'fastDummies', 'MuMIn', 'lmerTest', 'reghelper',
-          'bbmle', 'performance', 'see', 'psych','haven', 'effects','tidyverse','parallel','optimx','minqa','blme','dfoptim', 'remotes', 'DHARMa', 'multcomp', 'splines','effectsize')
+          'bbmle', 'performance', 'psych','haven', 'effects','tidyverse','parallel','optimx','minqa','blme','dfoptim', 'remotes', 'DHARMa', 'multcomp', 'splines','effectsize', 'see')
      
 not.have <- need[!(need %in% installed.packages()[,"Package"])]
 if(length(not.have)) install.packages(not.have)
