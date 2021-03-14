@@ -1234,7 +1234,20 @@ rho_lme <- function(fit) {
                                
 #=================================================================================================================================
                                
+cov_str_gls <- function(fit, cov = TRUE){
+  corm <- corMatrix(fit$modelStruct$corStruct)[[5]]
+  varstruct <- fit$modelStruct$varStruct
+  varests <- coef(varstruct, uncons=F, allCoef=T)
+  covm <- corm*fit$sigma^2*t(t(varests))%*%t(varests)
+  return(covm)
+  }
+
+
+#=================================================================================================================================                               
+                               
 cov_str <- function(fit, cov = TRUE, time_var = "time", hlm = TRUE){
+  
+  if(inherits(fit, "gls")) return(cov_str_gls(fit=fit, cov=cov))
   
   rho <- rho_lme(fit)
   hetro <- hetro_var(fit)
@@ -1255,12 +1268,11 @@ cov_str <- function(fit, cov = TRUE, time_var = "time", hlm = TRUE){
   
   res <- corm*sig^2+if(hlm)sum_ranef_var(fit) else 0 *if(is.null(hetro)) 1 else t(t(hetro))%*%t(hetro)
   if(!is.null(hetro)) diag(res) <- sum_ranef_var(fit)+(sigma(fit)*hetro_var(fit))^2
-    
+  
   if(!cov) res <- cov2cor(res)
   rownames(res) <- colnames(res) <- paste0(time_var,time_vals)
-  return(res)
-  
-  }                               
+  return(res)  
+}       
                                
 #=================================================================================================================================  
                                
