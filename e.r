@@ -1444,12 +1444,12 @@ form_length <- function(...){
 
 #=================================================================================================================================  
          
-lmectl <- function(maxIter = 200, msMaxIter = 200, niterEM = 50,
-                       msMaxEval = 400)
+lmectl <- function(maxIter = 200, msMaxIter = 1000, niterEM = 500,
+                       msMaxEval = 4000)
   {
-  nlme::lmeControl(maxIter = maxIter, msMaxIter = msMaxIter, niterEM = niterEM,
+  lmeControl(maxIter = maxIter, msMaxIter = msMaxIter, niterEM = niterEM,
                          msMaxEval = msMaxEval)
-}
+}  
          
 #=================================================================================================================================  
 
