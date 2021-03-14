@@ -1236,8 +1236,7 @@ rho_lme <- function(fit) {
                                
 cov_str_gls <- function(fit, cov = TRUE){
   corm <- corMatrix(fit$modelStruct$corStruct)[[5]]
-  varstruct <- fit$modelStruct$varStruct
-  varests <- coef(varstruct,uncons=F, allCoef=T)
+  varests <- hetro_var(fit=fit)
   covm <- corm*fit$sigma^2*if(!is.null(varests))t(t(varests))%*%t(varests) else 1
   return(covm)
 }
